@@ -16,3 +16,7 @@ OpenWRT.
 - [NetworkChuck travel router](https://www.youtube.com/watch?v=jlHWnKVpygw)
 - [tongpu/uci-guest-wifi](https://gist.github.com/tongpu/c54d1f45a8874d28b5d4)
 - [damianperera/openwrt-rpi](https://github.com/damianperera/openwrt-rpi)
+
+## TODO
+
+- [ ] UCI configurations aren't standing up any of the wifi networks.
