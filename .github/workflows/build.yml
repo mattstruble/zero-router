@@ -9,7 +9,7 @@ on:
 
 env:
   ofs_version: "v4.0.3"
-  target_prefix: "bcm27xx%2F"
+  target_prefix: "bcm27xx/"
 
 jobs:
   build:
