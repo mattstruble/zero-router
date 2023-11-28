@@ -10,6 +10,7 @@ on:
 env:
   ofs_version: "v4.0.3"
   target_prefix: "bcm27xx/"
+  openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
 
 jobs:
   build:
@@ -44,7 +45,7 @@ jobs:
         uses: fjogeleit/http-request-action@v1
         id: request
         with:
-          url: "https://sysupgrade.openwrt.org/api/v1/build"
+          url: "${{ env.openwrt_build_api }}"
           method: "POST"
           customHeaders: '{"Content-Type": "application/json"}'
           data: '{
@@ -56,6 +57,25 @@ jobs:
             "diff_packages": true,
             "client": "ofs/${{ env.ofs_version }}"
             }'
+
+      - name: Wait for OpenWRT build
+        uses: mydea/action-wait-for-api@v1
+        with:
+          url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
+          headers: '{"Content-Type": "application/json"}'
+          expected-status: "200"
+
+      - name: Get OpenWRT build data
+        uses: fjogeleit/http-request-action@v1
+        id: data
+        with:
+          url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
+          method: "GET"
+          customHeaders: '{"Content-Type": "application/json"}'
+
+      - name: Select factory image
+        run: |
+          jq '.[] | select(.filesystem=="ext4" and .type=="factory" ) | .name' ${{ steps.outputs.data.images }}
 
       - name: Show Response
         run: |
