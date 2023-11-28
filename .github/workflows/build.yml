@@ -62,7 +62,7 @@ jobs:
         run: |
           echo ${{steps.request.outputs.response}}
           echo ${{steps.request.outputs.response.request_hash}}
-          echo ::set-env name=build_url::${{ env.openwrt_build_api}}/${{steps.request.outputs.response.request_hash}}
+          echo "build_url=${{ env.openwrt_build_api}}/${{steps.request.outputs.response.request_hash}}" >> $GITHUB_ENV
 
       - name: Wait for OpenWRT build
         uses: mydea/action-wait-for-api@v1
@@ -70,7 +70,7 @@ jobs:
           url: "${{ env.openwrt_build_api }}/${{ steps.request.outputs.response.request_hash }}"
           headers: '{"Content-Type": "application/json"}'
           expected-status: "200"
-          timeout: "1800"
+          timeout: "300"
 
       - name: Get OpenWRT build data
         uses: fjogeleit/http-request-action@v1
