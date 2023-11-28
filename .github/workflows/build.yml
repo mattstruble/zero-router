@@ -64,6 +64,7 @@ jobs:
           url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
           headers: '{"Content-Type": "application/json"}'
           expected-status: "200"
+          timeout: "900"
 
       - name: Get OpenWRT build data
         uses: fjogeleit/http-request-action@v1
