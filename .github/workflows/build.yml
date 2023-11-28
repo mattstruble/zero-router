@@ -85,8 +85,8 @@ jobs:
         id: image
         with:
           cmd: |
-            curl -H 'Content-Type: application/json' ${{ env.build_url }}' \
-            | jq 'images.[] | select(.filesystem=="ext4" and .type=="factory" )
+            curl -H 'Content-Type: application/json' '${{ env.build_url }}' \
+            | jq 'images.[] | select(.filesystem=="ext4" and .type=="factory" ) | .name'
 
       - name: Show Response
         run: |
