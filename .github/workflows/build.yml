@@ -61,7 +61,7 @@ jobs:
       - name: Wait for OpenWRT build
         uses: mydea/action-wait-for-api@v1
         with:
-          url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
+          url: "${{ env.openwrt_build_api }}/${{ steps.request.outputs.response.request_hash }}"
           headers: '{"Content-Type": "application/json"}'
           expected-status: "200"
           timeout: "1800"
@@ -70,7 +70,7 @@ jobs:
         uses: fjogeleit/http-request-action@v1
         id: data
         with:
-          url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
+          url: "${{ env.openwrt_build_api }}/${{ steps.request.outputs.response.request_hash }}"
           method: "GET"
           customHeaders: '{"Content-Type": "application/json"}'
 
@@ -79,7 +79,7 @@ jobs:
         id: image
         with:
           cmd: |
-            curl -H 'Content-Type: application/json' ${{env.openwrt_build_api}}${{steps.outputs.response.request_hash}}' \
+            curl -H 'Content-Type: application/json' ${{env.openwrt_build_api}}${{steps.request.outputs.response.request_hash}}' \
             | jq 'images.[] | select(.filesystem=="ext4" and .type=="factory" )
 
       - name: Show Response
