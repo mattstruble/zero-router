@@ -1,0 +1,64 @@
+name: build
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Every Sunday
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  ofs_version: "v4.0.3"
+  target_prefix: "bcm27xx%2F"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        openwrt-version:
+          - 23.05.2
+        package: # Extracted from https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi
+          - { target: bcm2708, id: rpi }
+          - { target: bcm2709, id: rpi-2 }
+          - { target: bcm2710, id: rpi-3 }
+          - { target: bcm2711, id: rpi-4 }
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Read packages
+        uses: juliangruber/read-file-action@v1
+        id: package
+        with:
+          path: ./img/packages.json
+
+      - name: Read defaults
+        uses: juliangruber/read-file-action@v1
+        id: defaults
+        with:
+          path: ./img/defaults
+
+      - name: Request OpenWRT build
+        uses: fjogeleit/http-request-action@v1
+        id: request
+        with:
+          url: "https://sysupgrade.openwrt.org/api/v1/build"
+          method: "POST"
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: |
+            {
+              "profile": "${{ matrix.package.id }}"
+              "target": "${{ env.target_prefix }}${{ matrix.package.target }}"
+              "packages": "${{steps.package.outputs.content}}"
+              "defaults": "${{ steps.defaults.outputs.content }}"
+              "verstion": "${{ matrix.openwrt-version }}"
+              "diff_packages": true
+              "client": "ofs/${{ env.ofs_version }}"
+            }
+
+      - name: Show Response
+        run: |
+          echo ${{ steps.request.outputs.response }}
+          echo ${{ steps.request.outputs.headers }}
