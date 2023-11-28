@@ -51,7 +51,7 @@ jobs:
             {
               "profile": "${{ matrix.package.id }}",
               "target": "${{ env.target_prefix }}${{ matrix.package.target }}",
-              "packages": "${{steps.package.outputs.content}}",
+              "packages": ${{steps.package.outputs.content}},
               "defaults": "${{ steps.defaults.outputs.content }}",
               "verstion": "${{ matrix.openwrt-version }}",
               "diff_packages": true,
