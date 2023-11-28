@@ -90,6 +90,4 @@ jobs:
 
       - name: Show Response
         run: |
-          echo ${{ steps.request.outputs.response }}
-          echo ${{ steps.data.outputs.response }}
           echo ${{ steps.image.outputs.value }}
