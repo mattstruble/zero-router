@@ -58,6 +58,12 @@ jobs:
             "client": "ofs/${{ env.ofs_version }}"
             }'
 
+      - name: Create build url
+        run: |
+          echo ${{steps.request.outputs.response}}
+          echo ${{steps.request.outputs.response.request_hash}}
+          echo ::set-env name=build_url::${{ env.openwrt_build_api}}/${{steps.request.outputs.response.request_hash}}
+
       - name: Wait for OpenWRT build
         uses: mydea/action-wait-for-api@v1
         with:
