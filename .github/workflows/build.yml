@@ -64,7 +64,7 @@ jobs:
           url: "${{ env.openwrt_build_api }}/${{ steps.outputs.response.request_hash }}"
           headers: '{"Content-Type": "application/json"}'
           expected-status: "200"
-          timeout: "900"
+          timeout: "1800"
 
       - name: Get OpenWRT build data
         uses: fjogeleit/http-request-action@v1
@@ -75,10 +75,15 @@ jobs:
           customHeaders: '{"Content-Type": "application/json"}'
 
       - name: Select factory image
-        run: |
-          jq '.[] | select(.filesystem=="ext4" and .type=="factory" ) | .name' ${{ steps.outputs.data.images }}
+        uses: sergeysova/jq-action@v2
+        id: image
+        with:
+          cmd: |
+            curl -H 'Content-Type: application/json' ${{env.openwrt_build_api}}${{steps.outputs.response.request_hash}}' \
+            | jq 'images.[] | select(.filesystem=="ext4" and .type=="factory" )
 
       - name: Show Response
         run: |
           echo ${{ steps.request.outputs.response }}
-          echo ${{ steps.request.outputs.headers }}
+          echo ${{ steps.data.outputs.response }}
+          echo ${{ steps.image.outputs.value }}
