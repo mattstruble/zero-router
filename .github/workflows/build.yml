@@ -52,7 +52,7 @@ jobs:
             "target": "${{ env.target_prefix }}${{ matrix.package.target }}",
             "packages": ${{steps.package.outputs.content}},
             "defaults": "${{ steps.defaults.outputs.content }}",
-            "verstion": "${{ matrix.openwrt-version }}",
+            "version": "${{ matrix.openwrt-version }}",
             "diff_packages": true,
             "client": "ofs/${{ env.ofs_version }}"
             }'
