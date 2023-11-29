@@ -12,7 +12,7 @@ env:
   target_prefix: "bcm27xx/"
   openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
   openwrt_image_store: "https://sysupgrade.openwrt.org/store"
-  outdir: "./build/openwrt/images"
+  outdir: "./artifacts"
 
 jobs:
   build:
@@ -34,6 +34,8 @@ jobs:
       - name: Setup
         run: |
           mkdir -p ${{ env.outdir }}
+          echo "artifact_name=openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}" >> $GITHUB_ENV
+          echo "artifact_path=${{env.outdir}}/openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz" >> $GITHUB_ENV
 
       - name: Read packages
         uses: juliangruber/read-file-action@v1
@@ -84,9 +86,10 @@ jobs:
           image_name=$(curl -s -H 'Content-Type: application/json' '${{ env.build_url }}' \
             | jq -r '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name');
 
-          wget -q -O ${{env.outdir}}/openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz \
+          wget -q -O ${{ env.artifact_path }} \
           ${{env.openwrt_image_store}}/${{env.build_hash}}/${image_name};
 
-      - name: List files
-        run: |
-          ls -al ${{ env.outdir }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.artifact_name }}
+          path: ${{ env.artifact_path }}
