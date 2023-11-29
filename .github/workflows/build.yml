@@ -11,7 +11,7 @@ env:
   ofs_version: "v4.0.3"
   target_prefix: "bcm27xx/"
   openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
-  openwrt_image_store: "https://sysupgrade.openwrt.org/store/"
+  openwrt_image_store: "https://sysupgrade.openwrt.org/store"
 
 jobs:
   build:
@@ -64,7 +64,7 @@ jobs:
           echo ${{steps.request.outputs.response}}
           echo ${{steps.request.outputs.response.request_hash}}
           echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
-          echo "build_url=${{ env.openwrt_build_api}}/${{env.build_hash}}" >> $GITHUB_ENV
+          echo "build_url=${{ env.openwrt_build_api}}/${{fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
 
       - name: Wait for OpenWRT build
         uses: mydea/action-wait-for-api@v1
@@ -72,7 +72,7 @@ jobs:
           url: "${{ env.build_url}}"
           headers: '{"Content-Type": "application/json"}'
           expected-status: "200"
-          timeout: "300"
+          timeout: "900"
 
       - name: Get OpenWRT build data
         uses: fjogeleit/http-request-action@v1
