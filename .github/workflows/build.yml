@@ -12,6 +12,7 @@ env:
   target_prefix: "bcm27xx/"
   openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
   openwrt_image_store: "https://sysupgrade.openwrt.org/store"
+  outdir: "./build/openwrt/images"
 
 jobs:
   build:
@@ -29,6 +30,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Setup
+        run: |
+          mkdir -p ${{ env.outdir }}
 
       - name: Read packages
         uses: juliangruber/read-file-action@v1
@@ -74,27 +79,14 @@ jobs:
           expected-status: "200"
           timeout: "900"
 
-      - name: Get OpenWRT build data
-        uses: fjogeleit/http-request-action@v1
-        id: data
-        with:
-          url: "${{ env.build_url}}"
-          method: "GET"
-          customHeaders: '{"Content-Type": "application/json"}'
-
-      - name: Select factory image
-        uses: sergeysova/jq-action@v2
-        id: image
-        with:
-          cmd: |
-            curl -H 'Content-Type: application/json' '${{ env.build_url }}' \
-            | jq '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name'
-
-      - name: Show Response
-        run: |
-          echo ${{ steps.image.outputs.value }}
-
       - name: Download factory image
         run: |
-          wget -O openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz -P /images/ \
-          ${{env.openwrt_image_store}}/${{env.build_hash}}/${{steps.image.outputs.value}}
+          image_name=$(curl -s -H 'Content-Type: application/json' '${{ env.build_url }}' \
+            | jq -r '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name');
+
+          wget -q -O ${{env.outdir}}/openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz \
+          ${{env.openwrt_image_store}}/${{env.build_hash}}/${image_name};
+
+      - name: List files
+        run: |
+          ls -al ${{ env.outdir }}
