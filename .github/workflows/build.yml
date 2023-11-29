@@ -11,6 +11,7 @@ env:
   ofs_version: "v4.0.3"
   target_prefix: "bcm27xx/"
   openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
+  openwrt_image_store: "https://sysupgrade.openwrt.org/store/"
 
 jobs:
   build:
@@ -62,7 +63,8 @@ jobs:
         run: |
           echo ${{steps.request.outputs.response}}
           echo ${{steps.request.outputs.response.request_hash}}
-          echo "build_url=${{ env.openwrt_build_api}}/${{fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
+          echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
+          echo "build_url=${{ env.openwrt_build_api}}/${{env.build_hash}}" >> $GITHUB_ENV
 
       - name: Wait for OpenWRT build
         uses: mydea/action-wait-for-api@v1
@@ -91,3 +93,8 @@ jobs:
       - name: Show Response
         run: |
           echo ${{ steps.image.outputs.value }}
+
+      - name: Download factory image
+        run: |
+          wget -O openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz -P /images/ \
+          ${{env.openwrt_image_store}}/${{env.build_hash}}/${{steps.image.outputs.value}}
