@@ -34,7 +34,7 @@ jobs:
       - name: Setup
         run: |
           mkdir -p ${{ env.outdir }}
-          echo "artifact_name=openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz" >> $GITHUB_ENV
+          echo "artifact_name=openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}" >> $GITHUB_ENV
           echo "artifact_path=${{env.outdir}}/openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz" >> $GITHUB_ENV
 
       - name: Read packages
