@@ -45,7 +45,7 @@ jobs:
         uses: juliangruber/read-file-action@v1
         id: defaults
         with:
-          path: ./img/defaults
+          path: ./img/boot.sh
 
       - name: Request OpenWRT build
         uses: fjogeleit/http-request-action@v1
