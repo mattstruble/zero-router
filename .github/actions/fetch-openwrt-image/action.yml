@@ -29,15 +29,17 @@ outputs:
     description: "Path to the generated image file"
     value: ${{ steps.download.outputs.image_name }}
 
-env:
-  openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
-  openwrt_image_store: "https://sysupgrade.openwrt.org/store"
-
 runs:
   using: "composite"
 
   steps:
     - uses: actions/checkout@v3
+
+    - name: setup
+      shell: bash
+      run: |
+        echo "openwrt_build_api=https://sysupgrade.openwrt.org/api/v1/build" >> $GITHUB_ENV
+        echo "openwrt_image_store=https://sysupgrade.openwrt.org/store" >> $GITHUB_ENV
 
     - name: Read packages
       uses: juliangruber/read-file-action@v1
