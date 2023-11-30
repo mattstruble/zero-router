@@ -11,9 +11,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      openwrt-versions: ${{ fromJson(steps.openwrt.outputs.config).versions }}
-      openwrt-firmware: ${{ fromJson(steps.openwrt.outputs.config).firmware }}
       image-dirs: ${{ steps.images.outputs.dirs }}
+      openwrt-config: ${{ steps.openwrt.outputs.config }}
 
     steps:
       - uses: actions/checkout@v3
@@ -36,9 +35,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: ${{ needs.setup.outputs.openwrt-version }}
-        firmware: ${{ needs.setup.outputs.openwrt-firmware }}
-        image-dir: ${{ needs.setup.outputs.image-dirs}}
+        version: ${{ fromJson(needs.setup.outputs.openwrt-config).versions }}
+        firmware: ${{ fromJson(needs.setup.outputs.openwrt-config).firmware }}
+        image-dir: ${{ fromJson(needs.setup.outputs.image-dirs)}}
 
     steps:
       - uses: actions/checkout@v3
