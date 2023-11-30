@@ -3,93 +3,57 @@ on:
   schedule:
     - cron: "0 0 * * 0" # Every Sunday
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - main
 
-env:
-  ofs_version: "v4.0.3"
-  target_prefix: "bcm27xx/"
-  openwrt_build_api: "https://sysupgrade.openwrt.org/api/v1/build"
-  openwrt_image_store: "https://sysupgrade.openwrt.org/store"
-  outdir: "./artifacts"
-
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        openwrt-version:
-          - 23.05.2
-        package: # Extracted from https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi
-          - { target: bcm2708, id: rpi }
-          - { target: bcm2709, id: rpi-2 }
-          - { target: bcm2710, id: rpi-3 }
-          - { target: bcm2711, id: rpi-4 }
+    outputs:
+      openwrt-versions: ${{ fromJson(steps.openwrt.outputs.config).versions }}
+      openwrt-firmware: ${{ fromJson(steps.openwrt.outputs.config).firmware }}
+      image-dirs: ${{ steps.images.outputs.dirs }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup
+      - name: Read OpenWRT config
+        id: openwrt
         run: |
-          mkdir -p ${{ env.outdir }}
-          echo "artifact_name=openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}" >> $GITHUB_ENV
-          echo "artifact_path=${{env.outdir}}/openwrt-${{matrix.openwrt-version}}-${{matrix.package.id}}.img.gz" >> $GITHUB_ENV
+          # Read multiline json without needing to escape
+          echo "config<<EOF" >> $GITHUB_OUTPUT
+          cat ".github/configs/openwrt.json" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Read packages
-        uses: juliangruber/read-file-action@v1
-        id: package
+      - name: Get image types
+        id: images
+        run: echo "dirs=$(ls -d img/* | jq -R -s -c 'split("\n")[:-1]')"
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        version: ${{ needs.setup.outputs.openwrt-version }}
+        firmware: ${{ needs.setup.outputs.openwrt-firmware }}
+        image-dir: ${{ needs.setup.outputs.image-dirs}}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/cache@v3
+        id: openwrt-cache
         with:
-          path: ./img/packages.json
+          path: "./openwrt-artifacts"
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('${{ matrix.image-dir }}/packages.json', '${{ matrix.image-dir }}/boot.sh')}}
 
-      - name: Read defaults
-        uses: juliangruber/read-file-action@v1
-        id: defaults
+      - uses: ./.github/actions/fetch-openwrt-image.yml
+        if: steps.openwrt-cache.cache-hit != 'true'
         with:
-          path: ./img/boot.sh
-
-      - name: Request OpenWRT build
-        uses: fjogeleit/http-request-action@v1
-        id: request
-        with:
-          url: "${{ env.openwrt_build_api }}"
-          method: "POST"
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{
-            "profile": "${{ matrix.package.id }}",
-            "target": "${{ env.target_prefix }}${{ matrix.package.target }}",
-            "packages": ${{steps.package.outputs.content}},
-            "defaults": "${{ steps.defaults.outputs.content }}",
-            "version": "${{ matrix.openwrt-version }}",
-            "diff_packages": true,
-            "client": "ofs/${{ env.ofs_version }}"
-            }'
-
-      - name: Create build url
-        run: |
-          echo ${{steps.request.outputs.response}}
-          echo ${{steps.request.outputs.response.request_hash}}
-          echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
-          echo "build_url=${{ env.openwrt_build_api}}/${{fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_ENV
-
-      - name: Wait for OpenWRT build
-        uses: mydea/action-wait-for-api@v1
-        with:
-          url: "${{ env.build_url}}"
-          headers: '{"Content-Type": "application/json"}'
-          expected-status: "200"
-          timeout: "900"
-
-      - name: Download factory image
-        run: |
-          image_name=$(curl -s -H 'Content-Type: application/json' '${{ env.build_url }}' \
-            | jq -r '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name');
-
-          wget -q -O ${{ env.artifact_path }} \
-          ${{env.openwrt_image_store}}/${{env.build_hash}}/${image_name};
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.artifact_name }}
-          path: ${{ env.artifact_path }}
+          version: ${{ matrix.version }}
+          firmware: ${{ matrix.firmware }}
+          packages: ${{ matrix.image-dir }}/packages.json
+          boot: ${{ matrix.image-dir }}/boot.sh
+          outdir: "./openwrt-artifacts"
