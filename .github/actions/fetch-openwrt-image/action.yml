@@ -31,7 +31,7 @@ env:
   openwrt_image_store: "https://sysupgrade.openwrt.org/store"
 
 runs:
-  using: "commposite"
+  using: "composite"
 
   steps:
     - uses: actions/checkout@v3
