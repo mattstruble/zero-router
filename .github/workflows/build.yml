@@ -51,7 +51,7 @@ jobs:
           path: "./openwrt-artifacts"
           key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('${{ matrix.image-dir }}/packages.json', '${{ matrix.image-dir }}/boot.sh')}}
 
-      - uses: ./.github/actions/fetch-openwrt-image.yml
+      - uses: ./.github/actions/fetch-openwrt-image
         if: steps.openwrt-cache.cache-hit != 'true'
         with:
           version: ${{ matrix.version }}
