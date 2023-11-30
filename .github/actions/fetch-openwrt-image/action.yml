@@ -4,8 +4,11 @@ inputs:
   version:
     description: "The openwrt version to generate"
     required: true
-  firmware:
-    description: "A dict containing the target and id for the firmware to generate"
+  firmware_id:
+    description: "The id of the firmware to build"
+    required: true
+  firmware_target:
+    description: "The target of the firmware"
     required: true
   packages:
     description: "Path to the custom packages.json to load"
@@ -56,8 +59,8 @@ runs:
         method: "POST"
         customHeaders: '{"Content-Type": "application/json"}'
         data: '{
-          "profile": "${{ inputs.firmware.id }}",
-          "target": "${{inputs.firmware.target }}",
+          "profile": "${{ inputs.firmware_id }}",
+          "target": "${{inputs.firmware_target }}",
           "packages": ${{steps.package.outputs.content}},
           "defaults": "${{ steps.defaults.outputs.content }}",
           "version": "${{ inputs.version }}",

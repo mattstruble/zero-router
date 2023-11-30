@@ -55,7 +55,8 @@ jobs:
         if: steps.openwrt-cache.cache-hit != 'true'
         with:
           version: ${{ matrix.version }}
-          firmware: ${{ matrix.firmware }}
+          firmware_id: ${{ matrix.firmware.id}}
+          firmware_target: ${{ matrix.firmware.target }}
           packages: ${{ matrix.image-dir }}/packages.json
           boot: ${{ matrix.image-dir }}/boot.sh
           outdir: "./openwrt-artifacts"
