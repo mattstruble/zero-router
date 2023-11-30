@@ -66,6 +66,7 @@ runs:
           }'
 
     - name: Create build url
+      shell: bash
       id: build_data
       run: |
         echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_OUTPUT
@@ -80,6 +81,7 @@ runs:
         timeout: "900"
 
     - name: Download factory image
+      shell: bash
       id: download
       run: |
         image_name=$(curl -s -H 'Content-Type: application/json' '${{ steps.build_data.outputs.build_url }}' \
