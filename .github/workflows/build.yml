@@ -50,7 +50,7 @@ jobs:
         env:
           image_dir: ${{ matrix.image_dir }}
         run: |
-          echo "image_name=${image_dir#*/}" #https://stackoverflow.com/a/73467112
+          echo "image_name=${image_dir##*/}" >> $GITHUB_OUTPUT #https://stackoverflow.com/a/73467112
 
       - uses: actions/cache@v3
         id: openwrt-cache
