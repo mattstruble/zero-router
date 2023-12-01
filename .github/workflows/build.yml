@@ -40,7 +40,7 @@ jobs:
       matrix:
         version: ${{ fromJson(needs.setup.outputs.openwrt-config).versions }}
         firmware: ${{ fromJson(needs.setup.outputs.openwrt-config).firmware }}
-        image_dir: ${{ fromJson(needs.setup.outputs.image-dirs)}}
+        image_dir: ${{ fromJson(needs.setup.outputs.image_dirs)}}
 
     steps:
       - uses: actions/checkout@v3
