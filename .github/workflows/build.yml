@@ -14,7 +14,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      image-dirs: ${{ steps.images.outputs.dirs }}
+      image_dirs: ${{ steps.images.outputs.dirs }}
       openwrt-config: ${{ steps.openwrt.outputs.config }}
 
     steps:
@@ -40,23 +40,36 @@ jobs:
       matrix:
         version: ${{ fromJson(needs.setup.outputs.openwrt-config).versions }}
         firmware: ${{ fromJson(needs.setup.outputs.openwrt-config).firmware }}
-        image-dir: ${{ fromJson(needs.setup.outputs.image-dirs)}}
+        image_dir: ${{ fromJson(needs.setup.outputs.image-dirs)}}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: setup
+        id: setup
+        env:
+          image_dir: ${{ matrix.image_dir }}
+        run: |
+          echo "image_name=${image_dir##*/}" #https://stackoverflow.com/a/73467112
 
       - uses: actions/cache@v3
         id: openwrt-cache
         with:
           path: "./openwrt-artifacts"
-          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('${{ matrix.image-dir }}/packages.json', '${{ matrix.image-dir }}/boot.sh')}}
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('${{ matrix.image_dir }}/*' )}}
 
       - uses: ./.github/actions/fetch-openwrt-image
         if: steps.openwrt-cache.cache-hit != 'true'
+        id: openwrt
         with:
           version: ${{ matrix.version }}
           firmware_id: ${{ matrix.firmware.id}}
           firmware_target: ${{ matrix.firmware.target }}
-          packages: ${{ matrix.image-dir }}/packages.json
-          boot: ${{ matrix.image-dir }}/boot.sh
+          packages: ${{ matrix.image_dir }}/packages.json
+          boot: ${{ matrix.image_dir }}/boot.sh
           outdir: "./openwrt-artifacts"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ steps.setup.outputs.image_name }}.img.gz
+          path: ${{ steps.openwrt.outputs.image }}
