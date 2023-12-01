@@ -1,0 +1,9 @@
+{
+  "versions": ["23.05.2"],
+  "firmware": [
+    { "target": "bcm27xx/bcm2708", "id": "rpi" },
+    { "target": "bcm27xx/bcm2709", "id": "rpi-2" },
+    { "target": "bcm27xx/bcm2710", "id": "rpi-3" },
+    { "target": "bcm27xx/bcm2711", "id": "rpi-4" }
+  ]
+}

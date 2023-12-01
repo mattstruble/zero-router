@@ -1,0 +1,97 @@
+name: "OpenWRT Firmware Download"
+description: "Queries OpenWRT Firmware Selector and generates the image"
+inputs:
+  version:
+    description: "The openwrt version to generate"
+    required: true
+  firmware_id:
+    description: "The id of the firmware to build"
+    required: true
+  firmware_target:
+    description: "The target of the firmware"
+    required: true
+  packages:
+    description: "Path to the custom packages.json to load"
+    required: true
+  boot:
+    description: "Path to the custom boot.sh to load"
+    required: true
+  outdir:
+    description: "Path to output the images into"
+    required: false
+    default: "./"
+  ofs_version:
+    description: "The OpenWRT Firmware Selector version"
+    required: false
+    default: "v4.0.3"
+outputs:
+  image:
+    description: "Path to the generated image file"
+    value: ${{ steps.download.outputs.image_name }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: setup
+      shell: bash
+      run: |
+        echo "openwrt_build_api=https://sysupgrade.openwrt.org/api/v1/build" >> $GITHUB_ENV
+        echo "openwrt_image_store=https://sysupgrade.openwrt.org/store" >> $GITHUB_ENV
+
+    - name: Read packages
+      uses: juliangruber/read-file-action@v1
+      id: package
+      with:
+        path: ${{ inputs.packages }}
+
+    - name: Read defaults
+      uses: juliangruber/read-file-action@v1
+      id: defaults
+      with:
+        path: ${{ inputs.boot }}
+
+    - name: Request OpenWRT build
+      uses: fjogeleit/http-request-action@v1
+      id: request
+      with:
+        url: "${{ env.openwrt_build_api }}"
+        method: "POST"
+        customHeaders: '{"Content-Type": "application/json"}'
+        data: '{
+          "profile": "${{ inputs.firmware_id }}",
+          "target": "${{inputs.firmware_target }}",
+          "packages": ${{steps.package.outputs.content}},
+          "defaults": "${{ steps.defaults.outputs.content }}",
+          "version": "${{ inputs.version }}",
+          "diff_packages": true,
+          "client": "ofs/${{ inputs.ofs_version }}"
+          }'
+
+    - name: Create build url
+      shell: bash
+      id: build_data
+      run: |
+        echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_OUTPUT
+        echo "build_url=${{ env.openwrt_build_api}}/${{fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_OUTPUT
+
+    - name: Wait for OpenWRT build
+      uses: mydea/action-wait-for-api@v1
+      with:
+        url: "${{ steps.build_data.outputs.build_url}}"
+        headers: '{"Content-Type": "application/json"}'
+        expected-status: "200"
+        timeout: "900"
+
+    - name: Download factory image
+      shell: bash
+      id: download
+      run: |
+        image_name=$(curl -s -H 'Content-Type: application/json' '${{ steps.build_data.outputs.build_url }}' \
+          | jq -r '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name');
+
+        wget -q -P ${{ inputs.outdir }} ${{env.openwrt_image_store}}/${{steps.build_data.outputs.build_hash}}/${image_name};
+
+        echo "image_name=${{ inputs.outdir }}/${image_name}" >> $GITHUB_OUTPUT
