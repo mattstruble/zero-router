@@ -64,7 +64,7 @@ runs:
           "profile": "${{ inputs.firmware_id }}",
           "target": "${{inputs.firmware_target }}",
           "packages": ${{steps.package.outputs.content}},
-          "defaults": "${{ steps.defaults.outputs.content }}",
+          "defaults": ${{ steps.defaults.outputs.content }},
           "version": "${{ inputs.version }}",
           "diff_packages": true,
           "client": "ofs/${{ inputs.ofs_version }}"
