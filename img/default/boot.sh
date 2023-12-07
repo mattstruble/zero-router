@@ -18,7 +18,7 @@ fi
 if [ "$wlan_name" != "" -a -n "$wlan_password" -a ${#wlan_password} -ge 8 ]; then
     uci set wireless.@wifi-device[0].disabled='0'
     uci set wireless.@wifi-iface[0].disabled='0'
-    uci set wireless.@wifi-iface[0].encryption='psk2'
+    uci set wireless.@wifi-iface[0].encryption='sae-mixed'
     uci set wireless.@wifi-iface[0].ssid="$wlan_name"
     uci set wireless.@wifi-iface[0].key="$wlan_password"
     uci commit wireless
