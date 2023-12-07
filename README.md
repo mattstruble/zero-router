@@ -16,7 +16,11 @@ OpenWRT.
 - [NetworkChuck travel router](https://www.youtube.com/watch?v=jlHWnKVpygw)
 - [tongpu/uci-guest-wifi](https://gist.github.com/tongpu/c54d1f45a8874d28b5d4)
 - [damianperera/openwrt-rpi](https://github.com/damianperera/openwrt-rpi)
+- [Turn your Raspberry Pi into a Travel Router](https://reyestechtips.com/turn-your-raspberry-pi-into-a-travel-router/)
+- [OpenWRT Raspberry Pi 4b WiFi Router with adblock](https://forum.openwrt.org/t/openwrt-raspberry-pi-4b-wifi-router-with-adblock/162299)
+- [Initial network configuration via firmware selector](https://forum.openwrt.org/t/initial-network-configuration-via-firmware-selector/155139/1)
 
 ## TODO
 
-- [ ] UCI configurations aren't standing up any of the wifi networks.
+- [x] UCI configurations aren't standing up any of the wifi networks.
+- [ ] Create different configs for eth0, dual wifi, and adblock
