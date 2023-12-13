@@ -3,7 +3,8 @@ wlan_password="ChangeMe123456"
 
 lan_ip_address="192.168.1.1"
 
-wifi_count=$(nmcli device | grep wifi\  | wc -l)
+# TODO: Find more reliable way to list wifi devices
+wifi_count=$(lsusb | wc -l)
 eth_count=$(nmcli device | grep eth\  | wc -l)
 
 # log potential errors
