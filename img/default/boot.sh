@@ -33,6 +33,7 @@ uci commit wireless
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi
 if [ "$wifi_count" -gt 1 ]; then
+    uci set network.wwan="interface"
     uci set network.wwan.proto="dhcp"
     uci set network.wwan.peerdns="0"
     uci set network.wwan.dns="9.9.9.9 1.1.1.1"
