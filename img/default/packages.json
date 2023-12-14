@@ -54,6 +54,5 @@
   "luci-app-openvpn",
   "kmod-usb-net-rtl8152",
   "luci",
-  "luci-ssl",
-  "network-manager"
+  "luci-ssl"
 ]
