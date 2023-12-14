@@ -83,7 +83,7 @@ runs:
         url: "${{ steps.build_data.outputs.build_url}}"
         headers: '{"Content-Type": "application/json"}'
         expected-status: "200"
-        timeout: "900"
+        timeout: "1800"
 
     - name: Download factory image
       shell: bash
