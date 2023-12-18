@@ -41,6 +41,10 @@
   "uclient-fetch",
   "urandom-seed",
   "wpad-basic-mbedtls",
+  "kmod-rt2800-lib",
+  "kmod-rt2800-usb",
+  "kmod-rt2x00-lib",
+  "kmod-rt2x00-usb",
   "kmod-usb-core",
   "kmod-usb-ohci",
   "kmod-usb-uhci",
@@ -50,5 +54,7 @@
   "luci-app-openvpn",
   "kmod-usb-net-rtl8152",
   "luci",
-  "luci-ssl"
+  "luci-ssl",
+  "kmod-mac80211",
+  "mt7601u-firmware"
 ]
