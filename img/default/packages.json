@@ -56,5 +56,11 @@
   "luci",
   "luci-ssl",
   "kmod-mac80211",
-  "mt7601u-firmware"
+  "mt7601u-firmware",
+  "kmod-mt7601u",
+  "kmod-rtlwifi-usb",
+  "kmod-rtlwifi",
+  "kmod-usb-net",
+  "kmod-usb-net-cdc-ether",
+  "kmod-usb-net-rndis"
 ]
