@@ -64,7 +64,7 @@ runs:
           "profile": "${{ inputs.firmware_id }}",
           "target": "${{inputs.firmware_target }}",
           "packages": ${{steps.package.outputs.content}},
-          "defaults": "${{ steps.defaults.outputs.content }}",
+          "defaults": ${{ toJSON(steps.defaults.outputs.content) }},
           "version": "${{ inputs.version }}",
           "diff_packages": true,
           "client": "ofs/${{ inputs.ofs_version }}"
@@ -83,7 +83,7 @@ runs:
         url: "${{ steps.build_data.outputs.build_url}}"
         headers: '{"Content-Type": "application/json"}'
         expected-status: "200"
-        timeout: "900"
+        timeout: "1800"
 
     - name: Download factory image
       shell: bash
