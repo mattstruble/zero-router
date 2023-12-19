@@ -29,8 +29,9 @@ uci commit network
 
 # Configure WLAN
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
-uci set wireless.@wifi-device[0].disabled='0'
+uci set wireless.radio0.disabled='0'
 uci set wireless.@wifi-iface[0].disabled='0'
+uci set wireless.@wifi-iface[0].device="radio0"
 uci set wireless.@wifi-iface[0].encryption='psk2'
 uci set wireless.@wifi-iface[0].ssid="$wlan_name"
 uci set wireless.@wifi-iface[0].key="$wlan_password"
@@ -41,12 +42,14 @@ uci commit wireless
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi
 if [ "$wifi_count" -gt 1 ]; then
+    uci set wireless.radio1.disabled='0'
+    uci set wireless.radio1.channel='auto'
     # uci set wireless.radio1='wifi-device'
     # uci set wireless.radio1.channel='36'
     # uci set wireless.radio1.disabled='0'
 
     uci set wireless.@wifi-iface[1].disabled='0'
-    # uci set wireless.@wifi-iface[1].device='radio1'
+    uci set wireless.@wifi-iface[1].device='radio1'
     uci set wireless.@wifi-iface[1].mode="client"
     uci set wireless.@wifi-iface[1].network="wwan"
     uci commit wireless
