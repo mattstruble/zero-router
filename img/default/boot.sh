@@ -30,13 +30,13 @@ uci commit network
 # Configure WLAN
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
 uci set wireless.radio0.disabled='0'
-uci set wireless.@wifi-iface[0].disabled='0'
-uci set wireless.@wifi-iface[0].device="radio0"
-uci set wireless.@wifi-iface[0].encryption='psk2'
-uci set wireless.@wifi-iface[0].ssid="$wlan_name"
-uci set wireless.@wifi-iface[0].key="$wlan_password"
-uci set wireless.@wifi-iface[0].mode="ap"
-uci set wireless.@wifi-iface[0].network="lan"
+uci set wireless.default_radio0.disabled='0'
+uci set wireless.default_radio0.device="radio0"
+uci set wireless.default_radio0.encryption='psk2'
+uci set wireless.default_radio0.ssid="$wlan_name"
+uci set wireless.default_radio0.key="$wlan_password"
+uci set wireless.default_radio0.mode="ap"
+uci set wireless.default_radio0.network="lan"
 uci commit wireless
 
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
@@ -48,9 +48,9 @@ if [ "$wifi_count" -gt 1 ]; then
     # uci set wireless.radio1.channel='36'
     # uci set wireless.radio1.disabled='0'
 
-    uci set wireless.@wifi-iface[1].disabled='0'
-    uci set wireless.@wifi-iface[1].device='radio1'
-    uci set wireless.@wifi-iface[1].mode="client"
-    uci set wireless.@wifi-iface[1].network="wwan"
+    uci set wireless.default_radio1.disabled='0'
+    uci set wireless.default_radio1.device='radio1'
+    uci set wireless.default_radio1.mode="client"
+    uci set wireless.default_radio1.network="wwan"
     uci commit wireless
 fi
