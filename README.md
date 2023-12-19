@@ -23,4 +23,5 @@ OpenWRT.
 ## TODO
 
 - [x] UCI configurations aren't standing up any of the wifi networks.
+- [x] Support dual wifi devices out of the box
 - [ ] Create different configs for eth0, dual wifi, and adblock
