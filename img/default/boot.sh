@@ -53,7 +53,4 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.@wifi-iface[1].mode="client"
     uci set wireless.@wifi-iface[1].network="wwan"
     uci commit wireless
-
-    wifi
-    ifconfig wlan1 up
 fi
