@@ -49,7 +49,7 @@ uci commit wireless
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi
 if [ "$wifi_count" -gt 1 ]; then
-    # Hardcode the built-in raspberry pi device to radio1
+    # Hardcode the usb device to radio1
     # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
     usb_path=$(find /sys/devices/platform/soc/*usb*/ -name "net" | xargs dirname)
 
