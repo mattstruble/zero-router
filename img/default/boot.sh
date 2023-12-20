@@ -49,7 +49,7 @@ if [ "$wifi_count" -gt 1 ]; then
     # uci set wireless.radio1.disabled='0'
 
     uci set wireless.wifinet2='wifi-iface'
-    uci set wireless.wifinet2.disabled='0'
+    uci set wireless.wifinet2.disabled='1'
     uci set wireless.wifinet2.device='radio1'
     uci set wireless.wifinet2.mode="sta"
     uci set wireless.wifinet2.network="wwan"
