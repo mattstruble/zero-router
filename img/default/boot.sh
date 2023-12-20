@@ -32,7 +32,7 @@ uci commit network
 uci set wireless.radio0.disabled='0'
 uci set wireless.default_radio0.disabled='0'
 uci set wireless.default_radio0.device="radio0"
-uci set wireless.default_radio0.encryption='$wlan_encryption'
+uci set wireless.default_radio0.encryption="$wlan_encryption"
 uci set wireless.default_radio0.ssid="$wlan_name"
 uci set wireless.default_radio0.key="$wlan_password"
 uci set wireless.default_radio0.mode="ap"
