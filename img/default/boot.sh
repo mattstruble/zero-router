@@ -42,19 +42,18 @@ uci commit wireless
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi
 if [ "$wifi_count" -gt 1 ]; then
-    uci set wireless.radio1.disabled='0'
+    uci set wireless.radio1.disabled='1'
     uci set wireless.radio1.channel='auto'
     # uci set wireless.radio1='wifi-device'
     # uci set wireless.radio1.channel='36'
     # uci set wireless.radio1.disabled='0'
 
-    uci set wireless.wifinet2='wifi-iface'
-    uci set wireless.wifinet2.disabled='1'
-    uci set wireless.wifinet2.device='radio1'
-    uci set wireless.wifinet2.mode="sta"
-    uci set wireless.wifinet2.network="wwan"
-    uci set wireless.wifinet2.encryption="$wlan_encryption"
-    uci set wireless.wifinet2.ssid="$wlan_name"
-    uci set wireless.wifinet2.key="$wlan_password"
+    uci set wireless.default_radio1.disabled='1'
+    uci set wireless.default_radio1.device='radio1'
+    uci set wireless.default_radio1.mode="sta"
+    uci set wireless.default_radio1.network="wwan"
+    uci set wireless.default_radio1.encryption="$wlan_encryption"
+    uci set wireless.default_radio1.ssid="$wlan_name"
+    uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
 fi
