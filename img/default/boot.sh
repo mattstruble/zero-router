@@ -4,9 +4,8 @@ wlan_encryption="psk2"
 
 lan_ip_address="192.168.1.1"
 
-# TODO: Find more reliable way to list wifi devices
-wifi_count=$(lsusb | wc -l)
-#eth_count=$(nmcli device | grep eth  | wc -l)
+# https://unix.stackexchange.com/a/552995
+wifi_count=$(ls /sys/class/ieee80211/*/device/net/* -d | wc -l)
 
 # log potential errors
 exec >/tmp/setup.log 2>&1
