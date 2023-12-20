@@ -1,5 +1,6 @@
 wlan_name="OpenWRT"
 wlan_password="ChangeMe123456"
+wlan_encryption="psk2"
 
 lan_ip_address="192.168.1.1"
 
@@ -32,7 +33,7 @@ uci commit network
 uci set wireless.radio0.disabled='0'
 uci set wireless.default_radio0.disabled='0'
 uci set wireless.default_radio0.device="radio0"
-uci set wireless.default_radio0.encryption='psk2'
+uci set wireless.default_radio0.encryption='$wlan_encryption'
 uci set wireless.default_radio0.ssid="$wlan_name"
 uci set wireless.default_radio0.key="$wlan_password"
 uci set wireless.default_radio0.mode="ap"
@@ -48,9 +49,13 @@ if [ "$wifi_count" -gt 1 ]; then
     # uci set wireless.radio1.channel='36'
     # uci set wireless.radio1.disabled='0'
 
-    uci set wireless.default_radio1.disabled='0'
-    uci set wireless.default_radio1.device='radio1'
-    uci set wireless.default_radio1.mode="client"
-    uci set wireless.default_radio1.network="wwan"
+    uci set wireless.wifinet2='wifi-iface'
+    uci set wireless.wifinet2.disabled='0'
+    uci set wireless.wifinet2.device='radio1'
+    uci set wireless.wifinet2.mode="sta"
+    uci set wireless.wifinet2.network="wwan"
+    uci set wireless.wifinet2.encryption='$wlan_encryption'
+    uci set wireless.wifinet2.ssid='$wlan_name'
+    uci set wireless.wifinet2.key='$wlan_password'
     uci commit wireless
 fi
