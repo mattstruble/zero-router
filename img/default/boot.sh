@@ -27,9 +27,16 @@ uci set network.wwan.peerdns="0"
 uci set network.wwan.dns="9.9.9.9 1.1.1.1"
 uci commit network
 
-# Configure WLAN
+#### Configure WLAN ####
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
+####
+
+# Hardcode the built-in raspberry pi device to radio0
+# https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
+pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" | xargs dirname)
+
 uci set wireless.radio0.disabled='0'
+uci set wireless.radio0.path="${pi_path##/sys/devices/}"
 uci set wireless.default_radio0.disabled='0'
 uci set wireless.default_radio0.device="radio0"
 uci set wireless.default_radio0.encryption="$wlan_encryption"
@@ -42,8 +49,13 @@ uci commit wireless
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi
 if [ "$wifi_count" -gt 1 ]; then
+    # Hardcode the built-in raspberry pi device to radio1
+    # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
+    usb_path=$(find /sys/devices/platform/soc/*usb*/ -name "net" | xargs dirname)
+
     uci set wireless.radio1.disabled='1'
     uci set wireless.radio1.channel='auto'
+    uci set wireless.radio1.path="${usb_path##/sys/devices/}"
     # uci set wireless.radio1='wifi-device'
     # uci set wireless.radio1.channel='36'
     # uci set wireless.radio1.disabled='0'
@@ -56,4 +68,8 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.default_radio1.ssid="$wlan_name"
     uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
+
 fi
+
+# Restart wifi devices
+wifi
