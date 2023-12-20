@@ -53,8 +53,8 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.wifinet2.device='radio1'
     uci set wireless.wifinet2.mode="sta"
     uci set wireless.wifinet2.network="wwan"
-    uci set wireless.wifinet2.encryption='$wlan_encryption'
-    uci set wireless.wifinet2.ssid='$wlan_name'
-    uci set wireless.wifinet2.key='$wlan_password'
+    uci set wireless.wifinet2.encryption="$wlan_encryption"
+    uci set wireless.wifinet2.ssid="$wlan_name"
+    uci set wireless.wifinet2.key="$wlan_password"
     uci commit wireless
 fi
