@@ -27,6 +27,27 @@ uci set network.wwan.peerdns="0"
 uci set network.wwan.dns="9.9.9.9 1.1.1.1"
 uci commit network
 
+#### Configure Firewall ####
+while uci -q delete firewall.@zone[0]; do :; done
+
+# LAN
+uci add firewall zone
+uci set firewall.@zone[-1].name='lan'
+uci set firewall.@zone[-1].network='lan'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+
+# WAN
+uci add firewall zone
+uci set firewall.@zone[-1].name='wan'
+uci set firewall.@zone[-1].network='wwan'
+uci set firewall.@zone[-1].input='REJECT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='REJECT'
+uci set firewall.@zone[-1].masq='1'
+uci set firewall.@zone[-1].mtu_fix='1'
+
 #### Configure Travelmate ####
 # More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
 ####
