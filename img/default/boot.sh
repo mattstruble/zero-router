@@ -32,6 +32,7 @@ uci commit network
 ####
 uci set travelmate.global="travelmate"
 uci set travelmate.global.trm_enabled="1"
+uci set travelmate.global.trm_iface="wwan"
 uci set travelmate.global.trm_radio="radio0"
 uci set travelmate.global.trm_captive="1"
 uci set travelmate.global.trm_netcheck="1"
