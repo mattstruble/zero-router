@@ -19,6 +19,7 @@ OpenWRT.
 - [Turn your Raspberry Pi into a Travel Router](https://reyestechtips.com/turn-your-raspberry-pi-into-a-travel-router/)
 - [OpenWRT Raspberry Pi 4b WiFi Router with adblock](https://forum.openwrt.org/t/openwrt-raspberry-pi-4b-wifi-router-with-adblock/162299)
 - [Initial network configuration via firmware selector](https://forum.openwrt.org/t/initial-network-configuration-via-firmware-selector/155139/1)
+- [Doh dnsmasq](https://openwrt.org/docs/guide-user/services/dns/doh_dnsmasq_https-dns-proxy)
 
 ## TODO
 
