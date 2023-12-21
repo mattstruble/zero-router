@@ -27,6 +27,40 @@ uci set network.wwan.peerdns="0"
 uci set network.wwan.dns="9.9.9.9 1.1.1.1"
 uci commit network
 
+#### Configure Firewall ####
+while uci -q delete firewall.@zone[0]; do :; done
+
+# LAN
+uci add firewall zone
+uci set firewall.@zone[-1].name='lan'
+uci set firewall.@zone[-1].network='lan'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+
+# WAN
+uci add firewall zone
+uci set firewall.@zone[-1].name='wan'
+uci set firewall.@zone[-1].network='wwan'
+uci set firewall.@zone[-1].input='REJECT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='REJECT'
+uci set firewall.@zone[-1].masq='1'
+uci set firewall.@zone[-1].mtu_fix='1'
+
+#### Configure Travelmate ####
+# More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
+####
+uci set travelmate.global="travelmate"
+uci set travelmate.global.trm_enabled="1"
+uci set travelmate.global.trm_iface="wwan"
+uci set travelmate.global.trm_radio="radio0"
+uci set travelmate.global.trm_captive="1"
+uci set travelmate.global.trm_netcheck="1"
+uci set travelmate.global.trm_proactive="1"
+uci set travelmate.global.trm_autoadd="1"
+uci set travelmate.global.trm_randomize="1"
+
 #### Configure WLAN ####
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
 ####
@@ -69,7 +103,10 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
 
+    uci set travelmate.global.trm_radio="radio1"
 fi
 
 # Restart wifi devices
 wifi
+
+uci commit travelmate
