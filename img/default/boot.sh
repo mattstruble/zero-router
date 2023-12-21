@@ -24,7 +24,6 @@ uci commit network
 uci set network.wwan="interface"
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="0"
-uci set network.wwan.dns="9.9.9.9 1.1.1.1"
 uci commit network
 
 #### Configure Firewall ####

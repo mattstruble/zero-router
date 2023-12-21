@@ -102,5 +102,8 @@
   "travelmate",
   "luci-app-travelmate",
   "curl",
-  "qrencode"
+  "qrencode",
+
+  "https-dns-proxy",
+  "luci-app-https-dns-proxy"
 ]
