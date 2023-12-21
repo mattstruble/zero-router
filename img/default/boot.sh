@@ -27,6 +27,18 @@ uci set network.wwan.peerdns="0"
 uci set network.wwan.dns="9.9.9.9 1.1.1.1"
 uci commit network
 
+#### Configure Travelmate ####
+# More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
+####
+uci set travelmate.global="travelmate"
+uci set travelmate.global.trm_enabled="1"
+uci set travelmate.global.trm_radio="radio0"
+uci set travelmate.global.trm_captive="1"
+uci set travelmate.global.trm_netcheck="1"
+uci set travelmate.global.trm_proactive="1"
+uci set travelmate.global.trm_autoadd="1"
+uci set travelmate.global.trm_randomize="1"
+
 #### Configure WLAN ####
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
 ####
@@ -69,7 +81,10 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
 
+    uci set travelmate.global.trm_radio="radio1"
 fi
 
 # Restart wifi devices
 wifi
+
+uci commit travelmate
