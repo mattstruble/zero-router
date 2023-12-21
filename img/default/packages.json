@@ -97,5 +97,10 @@
   "kmod-usbmon",
   "rt2800-usb-firmware",
   "uhubctl",
-  "usbutils"
+  "usbutils",
+
+  "travelmate",
+  "luci-app-travelmate",
+  "curl",
+  "qrencode"
 ]
