@@ -64,7 +64,7 @@ jobs:
         id: openwrt-cache
         with:
           path: "./openwrt-artifacts"
-          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles("bin/base/*" )}}
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('bin/base/*')}}
 
       - uses: ./.github/actions/fetch-openwrt-image
         if: steps.openwrt-cache.cache-hit != 'true'
