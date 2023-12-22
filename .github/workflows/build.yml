@@ -54,7 +54,7 @@ jobs:
       - name: setup
         id: setup
         env:
-          extras: ${{ matrix.extras }}
+          extras: ${{ toJson(matrix.extras) }}
         # run: |
         # echo "image_name=${image_dir##*/}" >> $GITHUB_OUTPUT #https://stackoverflow.com/a/73467112
         run: |
