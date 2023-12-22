@@ -80,4 +80,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ steps.setup.outputs.image_name }}.img.gz
-          path: ${{ steps.openwrt.outputs.image }}
+          path: "./openwrt-artifacts/*.img.gz"
