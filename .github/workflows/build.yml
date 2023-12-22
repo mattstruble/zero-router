@@ -46,7 +46,7 @@ jobs:
       matrix:
         version: ${{ fromJson(needs.setup.outputs.openwrt-config).versions }}
         firmware: ${{ fromJson(needs.setup.outputs.openwrt-config).firmware }}
-        extras: ${{ needs.setup.outputs.extras}}
+        extras: ${{ fromJson(needs.setup.outputs.extras)}}
 
     steps:
       - uses: actions/checkout@v3
