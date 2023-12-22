@@ -22,10 +22,12 @@ runs:
       run: |
         import os
         import json
-        from itertools import combinations
+        from itertools import combinations, chain
 
         a = json.loads(os.environ["array"])
-        perm = [str(list(combinations(a, i))) for i in range(1, len(a)+1)]
+        perm = [list(combinations(a, i)) for i in range(1, len(a)+1)]
+        perm = chain.from_iterable(perm)
+
 
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
           print(f"permutations={json.dumps(perm)}", file=fh)
