@@ -30,7 +30,7 @@ jobs:
 
       - name: Get image types
         id: images
-        run: echo "dirs=$(ls -d img/* | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "dirs=$(ls -d bin/* | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
