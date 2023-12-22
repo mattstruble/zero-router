@@ -67,7 +67,7 @@ jobs:
           key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('bin/base/*')}}
 
       - uses: ./.github/actions/fetch-openwrt-image
-        if: steps.openwrt-cache.cache-hit != 'true'
+        if: steps.openwrt-cache.outputs.cache-hit != 'true'
         id: openwrt
         with:
           version: ${{ matrix.version }}
