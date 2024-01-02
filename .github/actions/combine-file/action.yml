@@ -24,7 +24,7 @@ runs:
 
         # Read base files
         with open("bin/base/boot.sh", "r") as f:
-          boot = f.readlines()
+          boot = f.read()
 
         print(boot)
 
@@ -46,7 +46,7 @@ runs:
 
           try:
             with open(os.path.join(base_path, "boot.sh")) as f:
-              boot += "\n" + f.readlines()
+              boot += "\n" + f.read()
           except FileNotFoundError:
             pass
 
