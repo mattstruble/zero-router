@@ -1,0 +1,61 @@
+name: "Combine Files"
+description: "Combine image data files into one"
+inputs:
+  array:
+    description: "Array of folder names within bin/extras"
+    required: true
+outputs:
+  directory:
+    description: "Directory where the new files are stored"
+    value: ${{ steps.permutations.outputs.directory }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Combine Files
+      id: combine
+      shell: python
+      env:
+        array: "${{ inputs.array }}"
+      run: |
+        import os
+        import json
+
+        # Read base files
+        with open("bin/base/boot.sh", "r") as f:
+          boot = f.readlines()
+
+        with open("bin/base/packages.json", "r") as f:
+          packages = json.load(f)
+
+        # Create output directory
+        out_dir = "/tmp/combined/"
+        os.mkdir(out_dir)
+
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+          print(f"directory={out_dir}", file=fh)
+
+        # Iterate over extras dirs and combine with base files
+        extras = json.loads(os.environ["array"])
+
+        for extra in extras:
+          base_path = os.path.join("bin/extras", extra)
+
+          try:
+            with open(os.path.join(base_path, "boot.sh")) as f:
+              boot += f"\n{f.readlines()}"
+          except FileNotFoundError:
+            pass
+
+          try:
+            with open(os.path.join(base_path, "packages.json")) as f:
+              packages += json.load(f)
+          except FileNotFoundError:
+            pass
+
+        with open(os.path.join(out_dir, "boot.sh"), "w") as f:
+          f.write(boot)
+
+        with open(os.path.join(out_dir, "packages.json"), "w") as f:
+          json.dumps(packages)
