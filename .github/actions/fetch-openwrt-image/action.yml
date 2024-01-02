@@ -39,7 +39,7 @@ runs:
 
         mkdir -p ./build/openwrt/files
 
-        sudo apt install build-essential libncurses-dev libncursesw-dev \
+        sudo apt update && sudo apt install build-essential libncurses-dev libncursesw-dev \
         zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
 
     - name: Download Image Builder
