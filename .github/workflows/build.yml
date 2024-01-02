@@ -64,7 +64,7 @@ jobs:
         id: combined
         uses: ./.github/actions/combine-file
         with:
-          array: "${{ matrix.extras }}"
+          array: "${{ toJson(matrix.extras) }}"
 
       - uses: actions/cache@v3
         id: openwrt-cache
