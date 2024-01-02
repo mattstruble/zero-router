@@ -46,7 +46,7 @@ runs:
       shell: bash
       run: |
         cd ./build/openwrt && \
-        wget -r --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
+        wget -r -q --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
         tar -J -x -f openwrt-imagebuilder-*.tar.xz
 
     - name: Create uci-defaults
