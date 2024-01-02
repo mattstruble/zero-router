@@ -20,14 +20,10 @@ inputs:
     description: "Path to output the images into"
     required: false
     default: "./"
-  ofs_version:
-    description: "The OpenWRT Firmware Selector version"
-    required: false
-    default: "v4.0.3"
 outputs:
   image:
     description: "Path to the generated image file"
-    value: ${{ steps.download.outputs.image_name }}
+    value: ${{ steps.image.outputs.image_name }}
 
 runs:
   using: "composite"
@@ -38,60 +34,43 @@ runs:
     - name: setup
       shell: bash
       run: |
-        echo "openwrt_build_api=https://sysupgrade.openwrt.org/api/v1/build" >> $GITHUB_ENV
-        echo "openwrt_image_store=https://sysupgrade.openwrt.org/store" >> $GITHUB_ENV
+        echo "openwrt_targets=https://downloads.openwrt.org/snapshots/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
+        echo "openwrt_files=/build/openwrt/files" >> $GITHUB_ENV
 
-    - name: Read packages
-      uses: juliangruber/read-file-action@v1
+        mkdir -p ${{ env.openwrt_files }}
+
+        apt install build-essential libncurses-dev libncursesw-dev \
+        zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
+
+    - name: Download Image Builder
+      shell: bash
+      run: |
+        cd /build/openwrt && \
+        wget -r --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
+        tar -J -x -f openwrt-imagebuilder-*.tar.xz
+
+    - name: Create uci-defaults
+      shell: bash
+      run: |
+        mkdir -p /build/openwrt/files/etc/uci-defaults
+        cp ${{ inputs.boot }} ${{env.openwrt_files}}/etc/uci-defaults/99-custom
+
+    - name: Create packages
+      shell: bash
       id: package
-      with:
-        path: ${{ inputs.packages }}
+      env:
+        package_file: ${{ inputs.packages }}
+      run: echo "packages=$(cat $package_file | jq -c -r 'join(" ")')" >> $GITHUB_OUTPUT
 
-    - name: Read defaults
-      uses: juliangruber/read-file-action@v1
-      id: defaults
-      with:
-        path: ${{ inputs.boot }}
-
-    - name: Request OpenWRT build
-      uses: fjogeleit/http-request-action@v1
-      id: request
-      with:
-        url: "${{ env.openwrt_build_api }}"
-        method: "POST"
-        customHeaders: '{"Content-Type": "application/json"}'
-        data: '{
-          "profile": "${{ inputs.firmware_id }}",
-          "target": "${{inputs.firmware_target }}",
-          "packages": ${{steps.package.outputs.content}},
-          "defaults": ${{ toJSON(steps.defaults.outputs.content) }},
-          "version": "${{ inputs.version }}",
-          "diff_packages": true,
-          "client": "ofs/${{ inputs.ofs_version }}"
-          }'
-
-    - name: Create build url
+    - name: Make image
       shell: bash
-      id: build_data
+      id: image
       run: |
-        echo "build_hash=${{ fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_OUTPUT
-        echo "build_url=${{ env.openwrt_build_api}}/${{fromJson(steps.request.outputs.response).request_hash}}" >> $GITHUB_OUTPUT
+        cd /build/openwrt/openwrt-imagebuilder-*/ && \
+        make image \
+        PROFILE="${{inputs.firmware_id}}" \
+        PACKAGES="${{ steps.package.outputs.packages }}" \
+        FILES="${{env.openwrt_files}}" \
+        BIN_DIR="${{inputs.outdir}}"
 
-    - name: Wait for OpenWRT build
-      uses: mydea/action-wait-for-api@v1
-      with:
-        url: "${{ steps.build_data.outputs.build_url}}"
-        headers: '{"Content-Type": "application/json"}'
-        expected-status: "200"
-        timeout: "1800"
-
-    - name: Download factory image
-      shell: bash
-      id: download
-      run: |
-        image_name=$(curl -s -H 'Content-Type: application/json' '${{ steps.build_data.outputs.build_url }}' \
-          | jq -r '.images[] | select(.filesystem=="ext4" and .type=="factory" ) | .name');
-
-        wget -q -P ${{ inputs.outdir }} ${{env.openwrt_image_store}}/${{steps.build_data.outputs.build_hash}}/${image_name};
-
-        echo "image_name=${{ inputs.outdir }}/${image_name}" >> $GITHUB_OUTPUT
+        echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')"
