@@ -60,11 +60,17 @@ jobs:
         run: |
           echo "image_name=$(echo $extras | jq -c -r 'join("-")')" >> $GITHUB_OUTPUT
 
+      - name: Create combined files
+        id: combined
+        uses: ./.github/actions/combine-file
+        with:
+          array: "${{ matrix.extras }}"
+
       - uses: actions/cache@v3
         id: openwrt-cache
         with:
           path: "./openwrt-artifacts"
-          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('bin/base/*')}}
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles(steps.combined.outputs.directory)}}
 
       - uses: ./.github/actions/fetch-openwrt-image
         if: steps.openwrt-cache.outputs.cache-hit != 'true'
