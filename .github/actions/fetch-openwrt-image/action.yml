@@ -70,7 +70,8 @@ runs:
         make image \
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
-        FILES="${{env.openwrt_files}}" \
-        BIN_DIR="${{inputs.outdir}}"
+        FILES="${{env.openwrt_files}}"
+
+        cp $(find ./build/openwrt/. -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
 
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')"
