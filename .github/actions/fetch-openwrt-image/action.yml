@@ -37,7 +37,7 @@ runs:
         echo "openwrt_targets=https://downloads.openwrt.org/snapshots/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
         echo "openwrt_files=/build/openwrt/files" >> $GITHUB_ENV
 
-        mkdir -p ${{ env.openwrt_files }}
+        mkdir -p /build/openwrt/files
 
         apt install build-essential libncurses-dev libncursesw-dev \
         zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
