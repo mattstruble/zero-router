@@ -26,6 +26,8 @@ runs:
         with open("bin/base/boot.sh", "r") as f:
           boot = f.readlines()
 
+        print(boot)
+
         with open("bin/base/packages.json", "r") as f:
           packages = json.load(f)
 
@@ -44,7 +46,7 @@ runs:
 
           try:
             with open(os.path.join(base_path, "boot.sh")) as f:
-              boot += f"\n{f.readlines()}"
+              boot += "\n" + f.readlines()
           except FileNotFoundError:
             pass
 
