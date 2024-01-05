@@ -34,7 +34,7 @@ runs:
     - name: setup
       shell: bash
       run: |
-        echo "openwrt_targets=https://downloads.openwrt.org/snapshots/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
+        echo "openwrt_targets=https://downloads.openwrt.org/releases/${{ inputs.version }}/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
         echo "openwrt_files=~/build/openwrt/files" >> $GITHUB_ENV
 
         mkdir -p ~/build/openwrt/files
