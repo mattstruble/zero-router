@@ -67,7 +67,7 @@ jobs:
           firmware_target: ${{ matrix.firmware.target }}
           packages: ${{ matrix.image_dir }}/packages.json
           boot: ${{ matrix.image_dir }}/boot.sh
-          outdir: "./openwrt-artifacts"
+          outdir: "~/openwrt-artifacts"
 
       - uses: actions/upload-artifact@v3
         with:
