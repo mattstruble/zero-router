@@ -35,9 +35,9 @@ runs:
       shell: bash
       run: |
         echo "openwrt_targets=https://downloads.openwrt.org/snapshots/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
-        echo "openwrt_files=./build/openwrt/files" >> $GITHUB_ENV
+        echo "openwrt_files=~/build/openwrt/files" >> $GITHUB_ENV
 
-        mkdir -p ./build/openwrt/files
+        mkdir -p ~/build/openwrt/files
 
         sudo apt update && sudo apt install build-essential libncurses-dev \
         zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
@@ -45,7 +45,7 @@ runs:
     - name: Download Image Builder
       shell: bash
       run: |
-        cd ./build/openwrt && \
+        cd ~/build/openwrt && \
         wget -r -q --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
         tar -J -x -f openwrt-imagebuilder-*.tar.xz
 
@@ -66,7 +66,7 @@ runs:
       shell: bash
       id: image
       run: |
-        cd ./build/openwrt/openwrt-imagebuilder-*/ && \
+        cd ~/build/openwrt/openwrt-imagebuilder-*/ && \
         make image \
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
