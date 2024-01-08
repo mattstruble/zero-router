@@ -76,6 +76,8 @@ runs:
         PACKAGES="${{ steps.package.outputs.packages }}" \
         FILES="files"
 
+        find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz'
+
     - name: Select output image
       shell: bash
       id: image
