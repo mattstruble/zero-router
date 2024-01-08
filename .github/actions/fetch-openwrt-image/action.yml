@@ -35,8 +35,8 @@ runs:
       shell: bash
       run: |
         echo "openwrt_targets=https://downloads.openwrt.org/releases/${{ inputs.version }}/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
-        echo "openwrt_imagebuilder=~/build/openwrt/openwrt-imagebuilder-*/" >> $GITHUB_ENV
-        echo "openwrt_files=~/build/openwrt/openwrt-imagebuilder-*/files/" >> $GITHUB_ENV
+        echo "openwrt_imagebuilder=~/build/openwrt/openwrt-imagebuilder-*" >> $GITHUB_ENV
+        echo "openwrt_files=~/build/openwrt/openwrt-imagebuilder-*/files" >> $GITHUB_ENV
 
         mkdir -p ~/build/openwrt
 
@@ -71,8 +71,8 @@ runs:
         make image \
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
-        FILES="files" \
+        FILES="files"
 
-        cp $(find ${{env.openwrt_imagebuilder}} -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
+        cp $(find "${{env.openwrt_imagebuilder}}" -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
 
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')" >> $GITHUB_OUTPUT
