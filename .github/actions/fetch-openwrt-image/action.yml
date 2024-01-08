@@ -65,7 +65,6 @@ runs:
 
     - name: Make image
       shell: bash
-      id: image
       run: |
         cd "${{env.openwrt_imagebuilder}}" && \
         make image \
@@ -73,6 +72,10 @@ runs:
         PACKAGES="${{ steps.package.outputs.packages }}" \
         FILES="files"
 
+    - name: Select output image
+      shell: bash
+      id: image
+      run: |
         cp $(find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
 
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')" >> $GITHUB_OUTPUT
