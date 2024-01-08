@@ -47,7 +47,9 @@ runs:
         cd ~/build/openwrt && \
         wget -r -q --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
         tar -J -x -f openwrt-imagebuilder-*.tar.xz && \
-        cd openwrt-imagebuilder-* && \
+        rm -rf openwrt-imagebuilder-*.tar.xz
+
+        cd ~/build/openwrt/openwrt-imagebuilder-*/ && \
         echo "openwrt_imagebuilder=$(pwd)" >> $GITHUB_ENV
 
     - name: Create uci-defaults
