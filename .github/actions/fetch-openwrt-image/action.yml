@@ -73,6 +73,6 @@ runs:
         PACKAGES="${{ steps.package.outputs.packages }}" \
         FILES="files"
 
-        cp $(find "${{env.openwrt_imagebuilder}}" -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
+        cp $(find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
 
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')" >> $GITHUB_OUTPUT
