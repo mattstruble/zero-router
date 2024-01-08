@@ -36,6 +36,7 @@ uci set firewall.@zone[-1].network='lan'
 uci set firewall.@zone[-1].input='ACCEPT'
 uci set firewall.@zone[-1].output='ACCEPT'
 uci set firewall.@zone[-1].forward='ACCEPT'
+uci commit firewall
 
 # WAN
 uci add firewall zone
@@ -46,6 +47,7 @@ uci set firewall.@zone[-1].output='ACCEPT'
 uci set firewall.@zone[-1].forward='REJECT'
 uci set firewall.@zone[-1].masq='1'
 uci set firewall.@zone[-1].mtu_fix='1'
+uci commit firewall
 
 #### Configure Travelmate ####
 # More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
@@ -59,6 +61,7 @@ uci set travelmate.global.trm_netcheck="1"
 uci set travelmate.global.trm_proactive="1"
 uci set travelmate.global.trm_autoadd="1"
 uci set travelmate.global.trm_randomize="1"
+uci commit travelmate
 
 #### Configure WLAN ####
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
