@@ -38,6 +38,8 @@ runs:
         echo "openwrt_imagebuilder=~/build/openwrt/openwrt-imagebuilder-*/" >> $GITHUB_ENV
         echo "openwrt_files=~/build/openwrt/openwrt-imagebuilder-*/files/" >> $GITHUB_ENV
 
+        mkdir -p ~/build/openwrt
+
         sudo apt update && sudo apt install build-essential libncurses-dev \
         zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
 
