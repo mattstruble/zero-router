@@ -35,7 +35,6 @@ runs:
       shell: bash
       run: |
         echo "openwrt_targets=https://downloads.openwrt.org/releases/${{ inputs.version }}/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
-        echo "openwrt_imagebuilder=~/build/openwrt/openwrt-imagebuilder-*" >> $GITHUB_ENV
 
         mkdir -p ~/build/openwrt
 
@@ -47,13 +46,15 @@ runs:
       run: |
         cd ~/build/openwrt && \
         wget -r -q --no-parent -nd -A '*imagebuilder*' ${{ env.openwrt_targets }} && \
-        tar -J -x -f openwrt-imagebuilder-*.tar.xz
+        tar -J -x -f openwrt-imagebuilder-*.tar.xz && \
+        cd openwrt-imagebuilder-* && \
+        echo "openwrt_imagebuilder=$(pwd)" >> $GITHUB_ENV
 
     - name: Create uci-defaults
       shell: bash
       run: |
-        cd ${{ env.openwrt_imagebuilder}} && \
-        mkdir -p files/etc/uci-defaults
+        mkdir -p ${{ env.openwrt_imagebuilder}}/files/etc/uci-defaults
+        echo "openwrt_files=${{ env.openwrt_imagebuilder}}/files" >> $GITHUB_ENV
 
         cp ${{ inputs.boot }} ${{ env.openwrt_imagebuilder}}/files/etc/uci-defaults/
 
