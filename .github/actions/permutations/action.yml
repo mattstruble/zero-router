@@ -1,0 +1,31 @@
+name: "Permutations"
+description: "Calculate permutations of the provided array"
+inputs:
+  array:
+    description: "Array to generate permutations"
+    required: true
+outputs:
+  permutations:
+    description: "Permutations"
+    value: ${{ steps.permutations.outputs.permutations }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: permutations
+      id: permutations
+      shell: python
+      env:
+        array: "${{ inputs.array }}"
+        include_empty: "${{ inputs.include_empty }}"
+      run: |
+        import os
+        import json
+        from itertools import combinations, chain
+
+        a = json.loads(os.environ["array"])
+        perm = list(chain.from_iterable(combinations(a, r) for r in range(len(a)+1)))
+
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+          print(f"permutations={json.dumps(perm)}", file=fh)
