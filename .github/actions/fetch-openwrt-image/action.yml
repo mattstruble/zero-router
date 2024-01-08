@@ -75,13 +75,10 @@ runs:
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
         FILES="files"
-
-        find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz'
+        BIN_DIR="${{ inputs.outdir }}"
 
     - name: Select output image
       shell: bash
       id: image
       run: |
-        cp -f $(find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
-
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')" >> $GITHUB_OUTPUT
