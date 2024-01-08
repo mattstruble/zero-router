@@ -80,6 +80,6 @@ runs:
       shell: bash
       id: image
       run: |
-        cp $(find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
+        cp -f $(find ~/build/openwrt/ -type f -name '*ext4*factory*.img.gz') ${{ inputs.outdir }}
 
         echo "image_name=$(find ${{ inputs.outdir }} -type f -name '*ext4*factory*.img.gz')" >> $GITHUB_OUTPUT
