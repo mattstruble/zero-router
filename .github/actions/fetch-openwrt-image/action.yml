@@ -74,7 +74,7 @@ runs:
         make image \
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
-        FILES="files"
+        FILES="${{env.openwrt_files}}"
         BIN_DIR="${{ inputs.outdir }}"
 
     - name: Select output image
