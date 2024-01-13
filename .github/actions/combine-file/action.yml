@@ -25,8 +25,8 @@ runs:
         array: "${{ inputs.array }}"
         out_dir: "${{ inputs.build_dir }}"
       run: |
-        echo "$array" | jq ".[]" | while read -r extra; do
-          echo extra;
+        echo $array | jq ".[]" | while read -r extra; do
+          echo $extra;
           rsync -W --no-compress bin/extras/$extra/files $out_dir/files;
         done
 
