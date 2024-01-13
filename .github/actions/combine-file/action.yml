@@ -26,39 +26,23 @@ runs:
           rsync -W --no-compress bin/extras/$extra/files $out_dir/files;
         done
 
-    - name: Combine packages
-      shell: bash
-      env:
-        array: "${{ inputs.array }}"
-        build_dir: "${{ inputs.build_dir }}"
-      run: |
-        echo "$array" | jq ".[]" | while read -r extra; do
-          jq -s ".[0] * .[1]" $build_dir/packages.json /bin/extras/$extra/packages.json > $build_dir/packages.json
-        done
+        ls -R $out_dir
 
-        cat "bin/base/packages.json"
-
-    - name: Combine Files
+    - name: Combine Packages
       id: combine
       shell: python
       env:
         array: "${{ inputs.array }}"
+        out_dir: "${{ inputs.build_dir }}"
       run: |
         import os
         import json
 
         # Read base files
-        with open("bin/base/boot.sh", "r") as f:
-          boot = f.read()
-
-        print(boot)
-
         with open("bin/base/packages.json", "r") as f:
           packages = json.load(f)
 
-        # Create output directory
-        out_dir = "/tmp/combined/"
-        os.mkdir(out_dir)
+        out_dir = os.environ["out_dir"]
 
         with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
           print(f"directory={out_dir}", file=fh)
@@ -70,19 +54,10 @@ runs:
           base_path = os.path.join("bin/extras", extra)
 
           try:
-            with open(os.path.join(base_path, "boot.sh")) as f:
-              boot += "\n" + f.read()
-          except FileNotFoundError:
-            pass
-
-          try:
             with open(os.path.join(base_path, "packages.json")) as f:
               packages += json.load(f)
           except FileNotFoundError:
             pass
-
-        with open(os.path.join(out_dir, "boot.sh"), "w") as f:
-          f.write(boot)
 
         with open(os.path.join(out_dir, "packages.json"), "w") as f:
           json.dumps(packages)
