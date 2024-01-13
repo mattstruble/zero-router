@@ -27,7 +27,7 @@ runs:
       run: |
         echo $array | jq -r ".[]" | while read -r extra; do
           echo $extra;
-          rsync -RW --no-compress bin/extras/$extra/files "$out_dir/files";
+          rsync -aRW --no-compress bin/extras/$extra/files $out_dir;
         done
 
         ls -R $out_dir
