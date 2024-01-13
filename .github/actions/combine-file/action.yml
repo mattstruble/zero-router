@@ -23,7 +23,7 @@ runs:
         out_dir: "${{ inputs.build_dir }}"
       run: |
         echo "$array" | jq ".[]" | while read -r extra; do
-          rsync -W --no-compress "bin/extras/$extra/files" "$out_dir/files";
+          rsync -W --no-compress bin/extras/$extra/files $out_dir/files;
         done
 
     - name: Combine packages
@@ -33,7 +33,7 @@ runs:
         build_dir: "${{ inputs.build_dir }}"
       run: |
         echo "$array" | jq ".[]" | while read -r extra; do
-          jq -s ".[0] * .[1]" "$build_dir/packages.json" "/bin/extras/$extra/packages.json" > "$build_dir/packages.json"
+          jq -s ".[0] * .[1]" $build_dir/packages.json /bin/extras/$extra/packages.json > $build_dir/packages.json
         done
 
         cat "bin/base/packages.json"
