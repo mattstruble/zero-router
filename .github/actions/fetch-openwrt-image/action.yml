@@ -13,8 +13,8 @@ inputs:
   packages:
     description: "Path to the custom packages.json to load"
     required: true
-  boot:
-    description: "Path to the custom boot.sh to load"
+  files:
+    description: "Path to the files directory containing the custom configurations"
     required: true
   outdir:
     description: "Path to output the images into"
@@ -52,12 +52,6 @@ runs:
         cd ~/build/openwrt/openwrt-imagebuilder-*/ && \
         echo "openwrt_imagebuilder=$(pwd)" >> $GITHUB_ENV
 
-    - name: Create uci-defaults
-      shell: bash
-      run: |
-        mkdir -p ${{ env.openwrt_imagebuilder}}/files/etc/uci-defaults
-        echo "openwrt_files=${{ env.openwrt_imagebuilder}}/files" >> $GITHUB_ENV
-
     - name: Create packages
       shell: bash
       id: package
@@ -72,7 +66,7 @@ runs:
         make image \
         PROFILE="${{inputs.firmware_id}}" \
         PACKAGES="${{ steps.package.outputs.packages }}" \
-        FILES="${{env.openwrt_files}}/" \
+        FILES="${{inputs.files}}/" \
         BIN_DIR="${{ inputs.outdir }}"
 
     - name: Select output image

@@ -8,9 +8,12 @@ inputs:
     description: "Directory to sync extra files into"
     required: true
 outputs:
-  directory:
-    description: "Directory where the new files are stored"
-    value: ${{ steps.permutations.outputs.directory }}
+  files_path:
+    description: "Path to the image builder files directory."
+    value: ${{ inputs.build_dir }}/files
+  packages_path:
+    description: "Path to the combined packages.json"
+    value: ${{ steps.packages.outputs.path }}
 
 runs:
   using: "composite"
@@ -29,7 +32,7 @@ runs:
         ls -R $out_dir
 
     - name: Combine Packages
-      id: combine
+      id: packages
       shell: python
       env:
         array: "${{ inputs.array }}"
@@ -38,14 +41,12 @@ runs:
         import os
         import json
 
+        out_path = os.path.join(os.environ["out_dir"], "packages.json")
+
         # Read base files
         with open("bin/base/packages.json", "r") as f:
           packages = json.load(f)
 
-        out_dir = os.environ["out_dir"]
-
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-          print(f"directory={out_dir}", file=fh)
 
         # Iterate over extras dirs and combine with base files
         extras = json.loads(os.environ["array"])
@@ -59,5 +60,8 @@ runs:
           except FileNotFoundError:
             pass
 
-        with open(os.path.join(out_dir, "packages.json"), "w") as f:
+        with open(out_path, "w") as f:
           json.dumps(packages)
+
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+          print(f"path={out_path}", file=fh)

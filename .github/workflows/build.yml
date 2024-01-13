@@ -65,12 +65,12 @@ jobs:
         uses: ./.github/actions/combine-file
         with:
           array: "${{ toJson(matrix.extras) }}"
-          build_dir: "~/build/openwrt"
+          build_dir: ~/build/openwrt
 
       - uses: actions/cache@v3
         id: openwrt-cache
         with:
-          path: "~/openwrt-artifacts"
+          path: ~/openwrt-artifacts
           key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles(steps.combined.outputs.directory)}}
 
       - uses: ./.github/actions/fetch-openwrt-image
@@ -80,9 +80,9 @@ jobs:
           version: ${{ matrix.version }}
           firmware_id: ${{ matrix.firmware.id}}
           firmware_target: ${{ matrix.firmware.target }}
-          packages: bin/base/packages.json
-          boot: bin/base/boot.sh
-          outdir: "./openwrt-artifacts"
+          packages: ${{ steps.combined.outputs.packages_path }}
+          files: ${{ steps.combined.outputs.files_path }}
+          outdir: ./openwrt-artifacts
 
       - uses: actions/upload-artifact@v3
         with:
