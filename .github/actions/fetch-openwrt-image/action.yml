@@ -36,8 +36,6 @@ runs:
       run: |
         echo "openwrt_targets=https://downloads.openwrt.org/releases/${{ inputs.version }}/targets/${{ inputs.firmware_target }}/" >> $GITHUB_ENV
 
-        mkdir -p ~/build/openwrt
-
         sudo apt update && sudo apt install build-essential libncurses-dev \
         zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
 

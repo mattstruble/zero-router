@@ -57,15 +57,15 @@ jobs:
           extras: ${{ toJson(matrix.extras) }}
         run: |
           echo "image_name=$(echo $extras | jq -c -r 'join("-")')" >> $GITHUB_OUTPUT
-          mkdir -p ~/build/openwrt/ && \
-          cp -r bin/base/* ~/build/openwrt/
+          mkdir -p build/openwrt/ && \
+          cp -r bin/base/* build/openwrt/
 
       - name: Create combined files
         id: combined
         uses: ./.github/actions/combine-file
         with:
           array: "${{ toJson(matrix.extras) }}"
-          build_dir: ~/build/openwrt/
+          build_dir: build/openwrt/
 
       - uses: actions/cache@v3
         id: openwrt-cache
