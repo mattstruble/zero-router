@@ -57,21 +57,21 @@ jobs:
           extras: ${{ toJson(matrix.extras) }}
         run: |
           echo "image_name=$(echo $extras | jq -c -r 'join("-")')" >> $GITHUB_OUTPUT
-          mkdir -p build/openwrt/ && \
-          cp -r bin/base/* build/openwrt/
+          mkdir -p /home/runner/build/openwrt/ && \
+          cp -r bin/base/* /home/runner/build/openwrt/
 
       - name: Create combined files
         id: combined
         uses: ./.github/actions/combine-file
         with:
           array: "${{ toJson(matrix.extras) }}"
-          build_dir: build/openwrt/
+          build_dir: /home/runner/build/openwrt/
 
       - uses: actions/cache@v3
         id: openwrt-cache
         with:
-          path: ~/openwrt-artifacts
-          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles(steps.combined.outputs.directory)}}
+          path: ./openwrt-artifacts
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles(/home/runner/build/openwrt/)}}
 
       - uses: ./.github/actions/fetch-openwrt-image
         if: steps.openwrt-cache.outputs.cache-hit != 'true'
