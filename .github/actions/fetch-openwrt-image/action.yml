@@ -58,8 +58,6 @@ runs:
         mkdir -p ${{ env.openwrt_imagebuilder}}/files/etc/uci-defaults
         echo "openwrt_files=${{ env.openwrt_imagebuilder}}/files" >> $GITHUB_ENV
 
-        cp ${{ inputs.boot }} ${{ env.openwrt_imagebuilder}}/files/etc/uci-defaults/99-custom
-
     - name: Create packages
       shell: bash
       id: package
