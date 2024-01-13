@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "image_name=$(echo $extras | jq -c -r 'join("-")')" >> $GITHUB_OUTPUT
           mkdir -p "~/build/openwrt/"
-          cp -r "bin/base/" "~/build/openwrt/"
+          cp -r bin/base/* ~/build/openwrt/
 
       - name: Create combined files
         id: combined
