@@ -13,6 +13,26 @@ runs:
   using: "composite"
 
   steps:
+    - name: Rsync Files
+      shell: bash
+      env:
+        array: "${{ inputs.array }}"
+      run: |
+        echo "$array" | jq '.[]' | while read -r extra; do
+          rsync -W --no-compress 'bin/extras/$extra/files' 'bin/base/files';
+        done
+
+    - name: Combine packages
+      shell: bash
+      env:
+        array: "${{ inputs.array }}"
+      run: |
+        echo "$array" | jq '.[]' | while read -r extra; do
+          jq -s '.[0] * .[1]' '/bin/base/packages.json' '/bin/extras/$extra/packages.json' > 'bin/base/packages.json'
+        done
+
+        cat 'bin/base/packages.json'
+
     - name: Combine Files
       id: combine
       shell: python
