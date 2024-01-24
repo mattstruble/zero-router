@@ -69,6 +69,7 @@ jobs:
 
       - uses: actions/cache@v3
         id: openwrt-cache
+        if: ${{ false }} # disable since we can't hash outside the github workspace
         with:
           path: /home/runner/build/openwrt-artifacts
           key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('/home/runner/build/openwrt/')}}
