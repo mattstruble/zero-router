@@ -62,7 +62,7 @@ runs:
             pass
 
         with open(out_path, "w") as f:
-          json.dumps(packages)
+          json.dump(packages, f)
 
         with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
           print(f"path={out_path}", file=fh)
