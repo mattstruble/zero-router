@@ -70,7 +70,7 @@ jobs:
       - uses: actions/cache@v3
         id: openwrt-cache
         with:
-          path: ./openwrt-artifacts
+          path: /home/runner/build/openwrt-artifacts
           key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('/home/runner/build/openwrt/')}}
 
       - uses: ./.github/actions/fetch-openwrt-image
@@ -82,9 +82,9 @@ jobs:
           firmware_target: ${{ matrix.firmware.target }}
           packages: ${{ steps.combined.outputs.packages_path }}
           files: ${{ steps.combined.outputs.files_path }}
-          outdir: ./openwrt-artifacts
+          outdir: /home/runner/build/openwrt-artifacts
 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ steps.setup.outputs.image_name }}.img.gz
-          path: "./openwrt-artifacts/*.img.gz"
+          path: "/home/runner/build/openwrt-artifacts/*.img.gz"

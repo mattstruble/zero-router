@@ -10,7 +10,7 @@ inputs:
 outputs:
   files_path:
     description: "Path to the image builder files directory."
-    value: ${{ inputs.build_dir }}/files
+    value: ${{ inputs.build_dir }}files
   packages_path:
     description: "Path to the combined packages.json"
     value: ${{ steps.packages.outputs.path }}
