@@ -14,7 +14,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      image_dirs: ${{ steps.images.outputs.dirs }}
+      extras: ${{ steps.permutations.outputs.permutations }}
       openwrt-config: ${{ steps.openwrt.outputs.config }}
 
     steps:
@@ -28,9 +28,15 @@ jobs:
           cat ".github/configs/openwrt.json" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Get image types
-        id: images
-        run: echo "dirs=$(ls -d img/* | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      - name: Get image extras
+        id: extras
+        run: echo "dirs=$(ls bin/extras | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+      - name: Extra permutations
+        id: permutations
+        uses: ./.github/actions/permutations
+        with:
+          array: "${{ steps.extras.outputs.dirs }}"
 
   build:
     needs: setup
@@ -40,7 +46,7 @@ jobs:
       matrix:
         version: ${{ fromJson(needs.setup.outputs.openwrt-config).versions }}
         firmware: ${{ fromJson(needs.setup.outputs.openwrt-config).firmware }}
-        image_dir: ${{ fromJson(needs.setup.outputs.image_dirs)}}
+        extras: ${{ fromJson(needs.setup.outputs.extras)}}
 
     steps:
       - uses: actions/checkout@v3
@@ -48,28 +54,38 @@ jobs:
       - name: setup
         id: setup
         env:
-          image_dir: ${{ matrix.image_dir }}
+          extras: ${{ toJson(matrix.extras) }}
         run: |
-          echo "image_name=${image_dir##*/}" >> $GITHUB_OUTPUT #https://stackoverflow.com/a/73467112
+          echo "image_name=$(echo $extras | jq -c -r 'join("-")')" >> $GITHUB_OUTPUT
+          mkdir -p /home/runner/build/openwrt/ && \
+          cp -r bin/base/* /home/runner/build/openwrt/
+
+      - name: Create combined files
+        id: combined
+        uses: ./.github/actions/combine-file
+        with:
+          array: "${{ toJson(matrix.extras) }}"
+          build_dir: /home/runner/build/openwrt/
 
       - uses: actions/cache@v3
         id: openwrt-cache
+        if: ${{ false }} # disable since we can't hash outside the github workspace
         with:
-          path: "~/openwrt-artifacts"
-          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles(format('{0}/*', matrix.image_dir) )}}
+          path: /home/runner/build/openwrt-artifacts
+          key: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ hashFiles('/home/runner/build/openwrt/')}}
 
       - uses: ./.github/actions/fetch-openwrt-image
-        if: steps.openwrt-cache.cache-hit != 'true'
+        if: steps.openwrt-cache.outputs.cache-hit != 'true'
         id: openwrt
         with:
           version: ${{ matrix.version }}
           firmware_id: ${{ matrix.firmware.id}}
           firmware_target: ${{ matrix.firmware.target }}
-          packages: ${{ matrix.image_dir }}/packages.json
-          boot: ${{ matrix.image_dir }}/boot.sh
-          outdir: "~/openwrt-artifacts"
+          packages: ${{ steps.combined.outputs.packages_path }}
+          files: ${{ steps.combined.outputs.files_path }}
+          outdir: /home/runner/build/openwrt-artifacts
 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ steps.setup.outputs.image_name }}.img.gz
-          path: ${{ steps.openwrt.outputs.image }}
+          path: "/home/runner/build/openwrt-artifacts/*.img.gz"

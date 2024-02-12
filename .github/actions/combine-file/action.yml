@@ -1,0 +1,68 @@
+name: "Combine Files"
+description: "Combine image data files into one"
+inputs:
+  array:
+    description: "Array of folder names within bin/extras"
+    required: true
+  build_dir:
+    description: "Directory to sync extra files into"
+    required: true
+outputs:
+  files_path:
+    description: "Path to the image builder files directory."
+    value: ${{ inputs.build_dir }}files
+  packages_path:
+    description: "Path to the combined packages.json"
+    value: ${{ steps.packages.outputs.path }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Rsync Files
+      shell: bash
+      env:
+        array: "${{ inputs.array }}"
+        out_dir: ${{ inputs.build_dir }}
+      run: |
+        echo $array | jq -r ".[]" | while read -r extra; do
+          echo $extra;
+          rsync -a --no-compress bin/extras/$extra/files $out_dir;
+        done
+
+        ls -R $out_dir
+
+    - name: Combine Packages
+      id: packages
+      shell: python
+      env:
+        array: "${{ inputs.array }}"
+        out_dir: "${{ inputs.build_dir }}"
+      run: |
+        import os
+        import json
+
+        out_path = os.path.join(os.environ["out_dir"], "packages.json")
+
+        # Read base files
+        with open("bin/base/packages.json", "r") as f:
+          packages = json.load(f)
+
+
+        # Iterate over extras dirs and combine with base files
+        extras = json.loads(os.environ["array"])
+
+        for extra in extras:
+          base_path = os.path.join("bin/extras", extra)
+
+          try:
+            with open(os.path.join(base_path, "packages.json")) as f:
+              packages += json.load(f)
+          except FileNotFoundError:
+            pass
+
+        with open(out_path, "w") as f:
+          json.dump(packages, f)
+
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+          print(f"path={out_path}", file=fh)
