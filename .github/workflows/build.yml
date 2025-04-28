@@ -67,7 +67,7 @@ jobs:
           array: "${{ toJson(matrix.extras) }}"
           build_dir: /home/runner/build/openwrt/
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: openwrt-cache
         if: ${{ false }} # disable since we can't hash outside the github workspace
         with:
