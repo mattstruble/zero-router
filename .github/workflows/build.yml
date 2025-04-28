@@ -18,7 +18,7 @@ jobs:
       openwrt-config: ${{ steps.openwrt.outputs.config }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Read OpenWRT config
         id: openwrt
@@ -49,7 +49,7 @@ jobs:
         extras: ${{ fromJson(needs.setup.outputs.extras)}}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: setup
         id: setup
