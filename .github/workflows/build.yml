@@ -85,7 +85,7 @@ jobs:
           files: ${{ steps.combined.outputs.files_path }}
           outdir: /home/runner/build/openwrt-artifacts
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.version }}-${{ matrix.firmware.id }}-${{ steps.setup.outputs.image_name }}.img.gz
           path: "/home/runner/build/openwrt-artifacts/*.img.gz"
