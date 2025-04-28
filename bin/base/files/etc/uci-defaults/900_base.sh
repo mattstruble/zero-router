@@ -2,7 +2,7 @@ wlan_name="OpenWRT"
 wlan_password="ChangeMe123456"
 wlan_encryption="psk2"
 
-lan_ip_address="192.168.1.1"
+lan_ip_address="10.71.71.1"
 
 # https://unix.stackexchange.com/a/552995
 wifi_count=$(ls /sys/class/ieee80211/*/device/net/* -d | wc -l)
@@ -24,6 +24,8 @@ uci commit network
 uci set network.wwan="interface"
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="0"
+# Set DNS to Quad9 and Cloudflare Secure
+uci set network.wwan.dns="9.9.9.9 149.112.112.112 1.1.1.2 1.0.0.2"
 uci commit network
 
 #### Configure Firewall ####
@@ -53,7 +55,7 @@ uci commit firewall
 # More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
 ####
 uci set travelmate.global="travelmate"
-uci set travelmate.global.trm_enabled="1"
+uci set travelmate.global.trm_enabled="0"
 uci set travelmate.global.trm_iface="wwan"
 uci set travelmate.global.trm_radio="radio0"
 uci set travelmate.global.trm_captive="1"
