@@ -2,6 +2,7 @@ wlan_name="OpenWRT"
 wlan_password="ChangeMe123456"
 wlan_encryption="psk2"
 
+# TODO: Randomly generate?
 lan_ip_address="10.71.71.1"
 
 # https://unix.stackexchange.com/a/552995
@@ -12,6 +13,9 @@ exec >/tmp/setup.log 2>&1
 
 # Configure LAN
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
+uci -q delete network.lan
+uci add network lan
+uci set network.lan=interface
 uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.proto="static"
 uci set network.lan.netmask="255.255.255.0"
@@ -21,7 +25,9 @@ uci set network.lan.force_link="1"
 uci commit network
 
 # Configure WWAN
-uci set network.wwan="interface"
+uci -q delete network.wwan
+uci add network.wwan
+uci set network.wwan=interface
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="0"
 # Set DNS to Quad9 and Cloudflare Secure
