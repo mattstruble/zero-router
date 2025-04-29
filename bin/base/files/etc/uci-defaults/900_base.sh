@@ -63,7 +63,6 @@ uci commit firewall
 uci set travelmate.global="travelmate"
 uci set travelmate.global.trm_enabled="0"
 uci set travelmate.global.trm_iface="wwan"
-uci set travelmate.global.trm_radio="radio0"
 uci set travelmate.global.trm_captive="1"
 uci set travelmate.global.trm_netcheck="1"
 uci set travelmate.global.trm_proactive="1"
@@ -112,8 +111,6 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.default_radio1.ssid="$wlan_name"
     uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
-
-    uci set travelmate.global.trm_radio="radio1"
 fi
 
 # Restart wifi devices
