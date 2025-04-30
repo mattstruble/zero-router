@@ -1,0 +1,5 @@
+[
+    "openvpn-openssl",
+    "luci-app-openvpn",
+    "luci-proto-wireguard"
+]
