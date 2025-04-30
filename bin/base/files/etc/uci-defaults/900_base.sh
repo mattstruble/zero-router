@@ -50,7 +50,7 @@ uci commit firewall
 uci add firewall zone
 uci set firewall.@zone[-1].name='wan'
 uci set firewall.@zone[-1].network='wwan'
-uci set firewall.@zone[-1].input='REJECT'
+uci set firewall.@zone[-1].input='ACCEPT'
 uci set firewall.@zone[-1].output='ACCEPT'
 uci set firewall.@zone[-1].forward='REJECT'
 uci set firewall.@zone[-1].masq='1'
