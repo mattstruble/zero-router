@@ -13,8 +13,6 @@ while IFS= read -r -d '' line; do
     uci set wireless.radio"$radio_num".band='2g'
     uci set wireless.radio"$radio_num".htmode='HT20'
 
-    uci commit wireless
-
     ((radio_num = radio_num + 1))
 done < <(find /sys/devices/platform/soc/*usb*/ -name "net" -print0)
 
@@ -27,8 +25,10 @@ if [ "$radio_num" -gt 2 ]; then
     uci set wireless.clear_ap.device="radio1"
     uci set wireless.wwan_radio.device="radio2"
 
-    uci commit wireless
 elif [ "$radio_num" -gt 0 ]; then
     uci set wireless.radio1.disabled='0'
     uci set wireless.wwan_radio.device="radio1"
+
 fi
+
+uci commit wireless
