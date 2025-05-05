@@ -1,13 +1,8 @@
 #!/bin/bash
-WLAN_NAME="OpenWRT"
-WLAN_PASSWORD="ChangeMe123456"
-WLAN_ENCRYPTION="psk2"
-
-# Assign a random subnet for the LAN IP Address
-LAN_IP_ADDRESS=$(printf "10.%d.%d.1" "$((RANDOM % 256))" "$((RANDOM % 256))")
-
-# https://unix.stackexchange.com/a/552995
-wifi_count=$(ls /sys/class/ieee80211/*/device/net/* -d | wc -l)
+wlan_name="OpenWRT"
+wlan_password="ChangeMe123456"
+wlan_encryption="psk2"
+lan_ip_address="10.71.71.1"
 
 # log potential errors
 exec >/tmp/setup.log 2>&1
@@ -16,7 +11,7 @@ exec >/tmp/setup.log 2>&1
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
 uci -q delete network.lan
 uci set network.lan=interface
-uci set network.lan.ipaddr="$LAN_IP_ADDRESS"
+uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.proto="static"
 uci set network.lan.netmask="255.255.255.0"
 uci set network.lan.device="br-lan"
@@ -74,13 +69,9 @@ uci commit firewall
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
 ####
 
-# clear existing configurations
-uci delete wireless
-uci commit wireless
-
 # Hardcode the built-in raspberry pi device to radio0
 # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
-pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" | xargs dirname)
+pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" -print0 | xargs dirname)
 
 uci set wireless.radio0='wifi-device'
 uci set wireless.radio0.disabled='0'
@@ -89,6 +80,8 @@ uci set wireless.radio0.channel='auto'
 uci set wireless.radio0.band='2g'
 uci set wireless.radio0.htmode='HT20'
 
+uci set wireless.default_radio0.disabled='1'
+
 #### Configure wireless interfaces
 ###
 
@@ -96,9 +89,9 @@ uci set wireless.radio0.htmode='HT20'
 uci set wireless.clear_ap='wifi-iface'
 uci set wireless.clear_ap.disabled='0'
 uci set wireless.clear_ap.device="radio0"
-uci set wireless.clear_ap.encryption="$WLAN_ENCRYPTION"
-uci set wireless.clear_ap.ssid="$WLAN_NAME"
-uci set wireless.clear_ap.key="$WLAN_PASSWORD"
+uci set wireless.clear_ap.encryption="$wlan_encryption"
+uci set wireless.clear_ap.ssid="$wlan_name"
+uci set wireless.clear_ap.key="$wlan_password"
 uci set wireless.clear_ap.mode="ap"
 uci set wireless.clear_ap.network="lan"
 uci commit wireless
