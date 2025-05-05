@@ -20,10 +20,11 @@ uci set network.lan.force_link="1"
 uci commit network
 
 # Configure WWAN
-uci -q delete network.wwan
-uci set network.wwan="interface"
-uci set network.wwan.proto="dhcp"
-uci set network.wwan.peerdns="1"
+uci -q delete network.wan
+uci set network.wan="interface"
+uci set network.wan.proto="dhcp"
+uci set network.wan.peerdns="1"
+uci set network.wan.ifname="wwan"
 # Set DNS to Quad9 and Cloudflare Secure
 # uci set network.wwan.dns="9.9.9.9 149.112.112.112 1.1.1.2 1.0.0.2"
 uci commit network
@@ -42,8 +43,8 @@ uci commit firewall
 
 # WAN
 uci add firewall zone
-uci set firewall.@zone[-1].name='wwan'
-uci set firewall.@zone[-1].network='wwan'
+uci set firewall.@zone[-1].name='wan'
+uci set firewall.@zone[-1].network='wan'
 uci set firewall.@zone[-1].input='ACCEPT'
 uci set firewall.@zone[-1].output='ACCEPT'
 uci set firewall.@zone[-1].forward='REJECT'

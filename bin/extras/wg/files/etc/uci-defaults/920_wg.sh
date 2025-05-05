@@ -20,7 +20,7 @@ uci set firewall.@zone[-1].forward='REJECT'
 
 uci add firewall forwarding
 uci set firewall.@forwarding[-1].src='wg'
-uci set firewall.@forwarding[-1].dest='wwan'
+uci set firewall.@forwarding[-1].dest='wan'
 
 uci commit network
 uci commit firewall
