@@ -16,6 +16,6 @@ while IFS= read -r -d '' line; do
 
     uci commit wireless
 
-    ((radio_num++))
+    radio_num=$(expr "$radio_num" + 1)
 
 done < <(find /sys/devices/platform/soc/*usb*/ -name "net" -print0)
