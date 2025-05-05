@@ -4,7 +4,7 @@ export WLAN_PASSWORD="ChangeMe123456"
 export WLAN_ENCRYPTION="psk2"
 
 # Assign a random subnet for the LAN IP Address
-export LAN_IP_ADDRESS="10.%d.%d.1" "$((RANDOM % 256))" "$((RANDOM % 256))"
+export LAN_IP_ADDRESS=$(printf "10.%d.%d.1" "$((RANDOM % 256))" "$((RANDOM % 256))")
 
 # https://unix.stackexchange.com/a/552995
 wifi_count=$(ls /sys/class/ieee80211/*/device/net/* -d | wc -l)
@@ -15,7 +15,6 @@ exec >/tmp/setup.log 2>&1
 # Configure LAN
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
 uci -q delete network.lan
-uci add network lan
 uci set network.lan=interface
 uci set network.lan.ipaddr="$LAN_IP_ADDRESS"
 uci set network.lan.proto="static"
@@ -27,10 +26,10 @@ uci commit network
 
 # Configure WWAN
 uci -q delete network.wwan
-uci add network.wwan
 uci set network.wwan=interface
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="1"
+uci set network.wwan.force_link="1"
 # Set DNS to Quad9 and Cloudflare Secure
 # uci set network.wwan.dns="9.9.9.9 149.112.112.112 1.1.1.2 1.0.0.2"
 uci commit network
@@ -61,28 +60,28 @@ uci commit firewall
 #### Configure Travelmate ####
 # More options: https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md
 ####
-uci set travelmate.global="travelmate"
-uci set travelmate.global.trm_enabled="0"
-uci set travelmate.global.trm_iface="wwan"
-uci set travelmate.global.trm_captive="1"
-uci set travelmate.global.trm_netcheck="1"
-uci set travelmate.global.trm_proactive="1"
-uci set travelmate.global.trm_autoadd="1"
-uci set travelmate.global.trm_randomize="1"
-uci commit travelmate
+# uci set travelmate.global="travelmate"
+# uci set travelmate.global.trm_enabled="0"
+# uci set travelmate.global.trm_iface="wwan"
+# uci set travelmate.global.trm_captive="1"
+# uci set travelmate.global.trm_netcheck="1"
+# uci set travelmate.global.trm_proactive="1"
+# uci set travelmate.global.trm_autoadd="1"
+# uci set travelmate.global.trm_randomize="1"
+# uci commit travelmate
 
 #### Configure WLAN ####
 # More options: https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_interfaces
 ####
 
-while uci -q delete wireless.@wifi-device[0]; do :; done
-while uci -q delete wireless.@wifi-iface[0]; do :; done
+# clear existing configurations
+uci delete wireless
+uci commit wireless
 
 # Hardcode the built-in raspberry pi device to radio0
 # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
 pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" | xargs dirname)
 
-uci add wireless radio0
 uci set wireless.radio0='wifi-device'
 uci set wireless.radio0.disabled='0'
 uci set wireless.radio0.path="${pi_path##/sys/devices/}"
@@ -93,7 +92,6 @@ uci set wireless.radio0.htmode='HT20'
 # Configure wireless interfaces
 
 # Set up clear access point
-uci add wireless clear_ap
 uci set wireless.clear_ap='wifi-iface'
 uci set wireless.clear_ap.disabled='0'
 uci set wireless.clear_ap.device="radio0"
@@ -112,7 +110,6 @@ uci set wireless.wwan_radio.device=""
 uci set wireless.wwan_radio.network="wwan"
 uci set wireless.wwan_radio.mode="sta"
 uci commit wireless
-
 
 # Configure secondary wifi-iface as the client to connect to the external Wifi AP
 # This is based on the assumption that the usb device will have longer range than the built in rpi

@@ -6,7 +6,6 @@ radio_num=1
 while IFS= read -r -d '' line; do
     device_dir=$(dirname "$line")
 
-    uci add wireless radio"$radio_num"
     uci set wireless.radio"$radio_num"='wifi-device'
     uci set wireless.radio"$radio_num".disabled='1'
     uci set wireless.radio"$radio_num".channel='auto'
