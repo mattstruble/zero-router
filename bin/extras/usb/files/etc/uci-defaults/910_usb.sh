@@ -15,7 +15,10 @@ while IFS= read -r -d '' line; do
 
     uci set wireless.default_radio"$radio_num".disabled='1'
     uci set wireless.default_radio"$radio_num".mode='sta'
+    uci set wireless.default_radio"$radio_num".network="wwan"
 
     uci commit wireless
 
 done < <(find /sys/devices/platform/soc/*usb*/ -name "net" -print0)
+
+wifi

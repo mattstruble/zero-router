@@ -9,7 +9,6 @@ exec >/tmp/setup.log 2>&1
 
 # Configure LAN
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
-uci -q delete network.lan
 uci set network.lan=interface
 uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.proto="static"
@@ -20,11 +19,9 @@ uci set network.lan.force_link="1"
 uci commit network
 
 # Configure WWAN
-uci -q delete network.wwan
 uci set network.wwan=interface
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="1"
-uci set network.wwan.force_link="1"
 # Set DNS to Quad9 and Cloudflare Secure
 # uci set network.wwan.dns="9.9.9.9 149.112.112.112 1.1.1.2 1.0.0.2"
 uci commit network
@@ -71,13 +68,10 @@ uci commit firewall
 
 # Hardcode the built-in raspberry pi device to radio0
 # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
-pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" -print0 | xargs dirname)
+pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" | xargs dirname)
 
 uci set wireless.radio0.disabled='0'
 uci set wireless.radio0.path="${pi_path##/sys/devices/}"
-uci set wireless.radio0.channel='auto'
-uci set wireless.radio0.band='2g'
-uci set wireless.radio0.htmode='HT20'
 
 #### Configure wireless interfaces
 ###
@@ -91,3 +85,5 @@ uci set wireless.default_radio0.key="$wlan_password"
 uci set wireless.default_radio0.mode="ap"
 uci set wireless.default_radio0.network="lan"
 uci commit wireless
+
+wifi
