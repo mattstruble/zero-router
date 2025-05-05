@@ -10,12 +10,10 @@ while IFS= read -r -d '' line; do
     uci set wireless.radio"$radio_num".disabled='1'
     uci set wireless.radio"$radio_num".channel='auto'
     uci set wireless.radio"$radio_num.path=${device_dir##/sys/devices/}"
-    uci set wireless.radio"$radio_num".band='2g'
-    uci set wireless.radio"$radio_num".htmode='HT20'
 
     uci set wireless.default_radio"$radio_num".disabled='1'
     uci set wireless.default_radio"$radio_num".mode='sta'
-    uci set wireless.default_radio"$radio_num".network="wwan"
+    uci set wireless.default_radio"$radio_num".network="wan"
 
     uci commit wireless
 
