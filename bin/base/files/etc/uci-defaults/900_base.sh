@@ -9,6 +9,7 @@ exec >/tmp/setup.log 2>&1
 
 # Configure LAN
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
+uci -q delete network.lan
 uci set network.lan="interface"
 uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.proto="static"
@@ -19,6 +20,7 @@ uci set network.lan.force_link="1"
 uci commit network
 
 # Configure WWAN
+uci -q delete network.wan
 uci set network.wan="interface"
 uci set network.wan.proto="dhcp"
 uci set network.wan.peerdns="1"

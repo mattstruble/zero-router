@@ -1,11 +1,10 @@
 #!/bin/bash
 
-radio_num=0
+radio_num=1
 # Iterate over all radios and set them up
 # https://stackoverflow.com/a/9612232
 while IFS= read -r -d '' line; do
     device_dir=$(dirname "$line")
-    ((radio_num = radio_num + 1))
 
     uci set wireless.radio"$radio_num".disabled='1'
     uci set wireless.radio"$radio_num".channel='auto'
@@ -17,6 +16,6 @@ while IFS= read -r -d '' line; do
 
     uci commit wireless
 
-done < <(find /sys/devices/platform/soc/*usb*/ -name "net" -print0)
+    ((radio_num = radio_num + 1))
 
-wifi
+done < <(find /sys/devices/platform/soc/*usb*/ -name "net" -print0)
