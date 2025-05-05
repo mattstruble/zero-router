@@ -2,6 +2,7 @@ wlan_name="OpenWRT"
 wlan_password="ChangeMe123456"
 wlan_encryption="psk2"
 
+# TODO: Randomly generate?
 lan_ip_address="10.71.71.1"
 
 # https://unix.stackexchange.com/a/552995
@@ -12,6 +13,9 @@ exec >/tmp/setup.log 2>&1
 
 # Configure LAN
 # More options: https://openwrt.org/docs/guide-user/base-system/basic-networking
+uci -q delete network.lan
+uci add network lan
+uci set network.lan=interface
 uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.proto="static"
 uci set network.lan.netmask="255.255.255.0"
@@ -21,7 +25,9 @@ uci set network.lan.force_link="1"
 uci commit network
 
 # Configure WWAN
-uci set network.wwan="interface"
+uci -q delete network.wwan
+uci add network.wwan
+uci set network.wwan=interface
 uci set network.wwan.proto="dhcp"
 uci set network.wwan.peerdns="0"
 # Set DNS to Quad9 and Cloudflare Secure
@@ -44,7 +50,7 @@ uci commit firewall
 uci add firewall zone
 uci set firewall.@zone[-1].name='wan'
 uci set firewall.@zone[-1].network='wwan'
-uci set firewall.@zone[-1].input='REJECT'
+uci set firewall.@zone[-1].input='ACCEPT'
 uci set firewall.@zone[-1].output='ACCEPT'
 uci set firewall.@zone[-1].forward='REJECT'
 uci set firewall.@zone[-1].masq='1'
@@ -57,7 +63,6 @@ uci commit firewall
 uci set travelmate.global="travelmate"
 uci set travelmate.global.trm_enabled="0"
 uci set travelmate.global.trm_iface="wwan"
-uci set travelmate.global.trm_radio="radio0"
 uci set travelmate.global.trm_captive="1"
 uci set travelmate.global.trm_netcheck="1"
 uci set travelmate.global.trm_proactive="1"
@@ -106,8 +111,6 @@ if [ "$wifi_count" -gt 1 ]; then
     uci set wireless.default_radio1.ssid="$wlan_name"
     uci set wireless.default_radio1.key="$wlan_password"
     uci commit wireless
-
-    uci set travelmate.global.trm_radio="radio1"
 fi
 
 # Restart wifi devices
