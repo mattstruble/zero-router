@@ -73,32 +73,21 @@ uci commit firewall
 # https://forum.openwrt.org/t/list-option-paths-usb-radio-firstboot/96436
 pi_path=$(find /sys/devices/platform/soc/*mmc*/ -name "net" -print0 | xargs dirname)
 
-uci set wireless.radio0='wifi-device'
 uci set wireless.radio0.disabled='0'
 uci set wireless.radio0.path="${pi_path##/sys/devices/}"
 uci set wireless.radio0.channel='auto'
 uci set wireless.radio0.band='2g'
 uci set wireless.radio0.htmode='HT20'
 
-uci set wireless.default_radio0.disabled='1'
-
 #### Configure wireless interfaces
 ###
 
 # Set up clear access point
-uci set wireless.clear_ap='wifi-iface'
-uci set wireless.clear_ap.disabled='0'
-uci set wireless.clear_ap.device="radio0"
-uci set wireless.clear_ap.encryption="$wlan_encryption"
-uci set wireless.clear_ap.ssid="$wlan_name"
-uci set wireless.clear_ap.key="$wlan_password"
-uci set wireless.clear_ap.mode="ap"
-uci set wireless.clear_ap.network="lan"
-uci commit wireless
-
-# Set up WWAN wireless
-uci set wireless.wwan_radio='wifi-iface'
-uci set wireless.wwan_radio.disabled='1'
-uci set wireless.wwan_radio.network="wwan"
-uci set wireless.wwan_radio.mode="sta"
+uci set wireless.default_radio0.disabled='0'
+uci set wireless.default_radio0.device="radio0"
+uci set wireless.default_radio0.encryption="$wlan_encryption"
+uci set wireless.default_radio0.ssid="$wlan_name"
+uci set wireless.default_radio0.key="$wlan_password"
+uci set wireless.default_radio0.mode="ap"
+uci set wireless.default_radio0.network="lan"
 uci commit wireless
