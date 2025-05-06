@@ -1,3 +1,5 @@
 [
-    "luci-proto-wireguard"
+    "wireguard-tools",
+    "luci-proto-wireguard",
+    "luci-app-wireguard"
 ]
