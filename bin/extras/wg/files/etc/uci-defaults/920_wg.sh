@@ -35,6 +35,10 @@ uci add firewall forwarding
 uci set firewall.@forwarding[-1].src='wg_lan_zone'
 uci set firewall.@forwarding[-1].dest='wg0_zone'
 
+uci add firewall forwarding
+uci set firewall.@forwarding[-1].src='wg0_zone'
+uci set firewall.@forwarding[-1].dest='wg_lan_zone'
+
 uci add firewall rule
 uci set firewall.@rule[-1].src='wg_lan_zone'
 uci set firewall.@rule[-1].dest='wg0_zone'
